@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Devices - COMPARELY{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/pages/devices.css') }}">
+{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb-container">
+    <div class="container">
+        <a href="/">Home</a> / <span>Devices</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Halaman Daftar Semua Device -->
+<section class="devices-section">
+    <div class="container">
+        <h1>Browse Devices</h1>
+        <p class="section-subtitle">Pilih 2 device untuk membandingkan</p>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <form method="get" action="/devices" class="filter-form">
+                <!-- Filter by Category -->
+                <div class="filter-item">
+                    <label for="category">Kategori:</label>
+                    <select name="category" id="category" class="filter-select">
+                        <option value="">Semua Kategori</option>
+                        <option value="1" {% if category=='1' %}selected{% endif %}>Smartphone</option>
+                        <option value="2" {% if category=='2' %}selected{% endif %}>Laptop</option>
+                    </select>
+                </div>
+
+                <!-- Filter by Max Price -->
+                <div class="filter-item">
+                    <label for="max_price">Harga Maksimal:</label>
+                    <input type="number" name="max_price" id="max_price" class="filter-input"
+                        placeholder="Contoh: 5000000" value="{{ max_price if max_price else '' }}">
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary">Filter</button>
+                <a href="/devices" class="btn btn-secondary">Reset</a>
+            </form>
+        </div>
+
+        <!-- Devices Grid -->
+        <div class="devices-grid">
+            {% if devices %}
+            {% for device in devices %}
+            <div class="device-item-card">
+                <!-- Checkbox untuk select device -->
+                <input type="checkbox" class="device-checkbox" data-id="{{ device.id }}" data-name="{{ device.name }}">
+
+                <h3>{{ device.name }}</h3>
+                <p class="device-brand">{{ device.brand }}</p>
+
+                <div class="device-specs-preview">
+                    <p><strong>CPU:</strong> {{ device.cpu or 'N/A' }}</p>
+                    <p><strong>RAM:</strong> {{ device.ram or 'N/A' }}</p>
+                    <p><strong>Storage:</strong> {{ device.storage or 'N/A' }}</p>
+                </div>
+
+                <p class="device-price">Rp {{ "{:,.0f}".format(device.price) if device.price else 'N/A' }}</p>
+
+                <div class="device-actions">
+                    <a href="/device/{{ device.id }}" class="btn btn-secondary btn-small">Detail</a>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="no-devices">
+                <div class="empty-icon">📱</div>
+                <p>Tidak ada device yang sesuai dengan filter yang Anda pilih.</p>
+                <p style="font-size: 14px; color: var(--color-text-light); margin-top: 8px;">Coba ubah filter atau reset
+                    untuk melihat semua device.</p>
+                <a href="/devices" class="btn btn-primary" style="margin-top: 16px;">Reset Filter</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Floating Compare Bar -->
+<div id="compareBar" class="compare-bar">
+    <div class="compare-bar-content">
+        <div id="selectedDevices" class="selected-devices">
+            <!-- Device tags akan ditambahkan via JavaScript -->
+        </div>
+        <div class="compare-bar-actions">
+            <button id="compareButton" class="btn btn-primary" disabled>Bandingkan</button>
+            <button id="clearButton" class="btn btn-secondary">Clear</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', path='/js/pages/devices.js') }}"></script>
+{% endblock %}
