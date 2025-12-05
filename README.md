@@ -1,6 +1,6 @@
 # 📱 COMPARELY - Aplikasi Perbandingan Perangkat Teknologi
 
-## ðŸ”§ Troubleshooting
+##  Troubleshooting
 
 
 
