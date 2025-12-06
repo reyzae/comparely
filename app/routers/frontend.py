@@ -4,7 +4,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from typing import Optional
 from ..core.deps import get_db
-from ..crud import device as device_crud
+from ..crud import phone as phone_crud
 
 # Setup Jinja2 Templates
 templates = Jinja2Templates(directory="app/templates")
@@ -27,7 +27,7 @@ async def homepage(request: Request, db: Session = Depends(get_db)):
     """
     
     # Ambil 2 device terbaru untuk example comparison
-    devices = device_crud.get_devices(db, skip=0, limit=2)
+    devices = phone_crud.get_phones(db, skip=0, limit=2)
     
     # Siapkan data untuk template
     comparison_data = {
@@ -104,7 +104,7 @@ async def device_detail_page(
     """
     
     # Ambil data device dari database berdasarkan ID
-    device = device_crud.get_device(db, device_id)
+    device = phone_crud.get_phone(db, device_id)
     
     # Kalau device tidak ada, redirect ke halaman devices
     if not device:
@@ -142,7 +142,7 @@ async def devices_page(
     
     # Ambil semua device dari database
     # Kalau ada filter, nanti kita filter di sini
-    devices = device_crud.get_devices(db, skip=0, limit=100)
+    devices = phone_crud.get_phones(db, skip=0, limit=100)
     
     # Filter berdasarkan kategori (kalau ada)
     if category:
@@ -190,7 +190,7 @@ async def search_devices(
     """
     
     # Cari devices berdasarkan query (nama atau brand)
-    devices = device_crud.get_devices(db, search=query, limit=50)
+    devices = phone_crud.get_phones(db, search=query, limit=50)
     
     # Render template search_results.html dengan hasil pencarian
     return templates.TemplateResponse(
@@ -222,9 +222,9 @@ async def compare_page(
     """
     
     # Ambil data device pertama dari database
-    device1 = device_crud.get_device(db, id1)
+    device1 = phone_crud.get_phone(db, id1)
     # Ambil data device kedua dari database
-    device2 = device_crud.get_device(db, id2)
+    device2 = phone_crud.get_phone(db, id2)
     
     # Kalau salah satu device tidak ada, redirect ke homepage
     if not device1 or not device2:
