@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import Dict, List, Any
 from .. import models
-from ..crud import device as device_crud
+from ..crud import phone as phone_crud
 
 def compare_two_devices(db: Session, device_id_1: int, device_id_2: int) -> Dict[str, Any]:
     """
@@ -22,8 +22,8 @@ def compare_two_devices(db: Session, device_id_1: int, device_id_2: int) -> Dict
         ValueError: Jika salah satu atau kedua device tidak ditemukan
     """
     # Ambil data kedua device dari database
-    device1 = device_crud.get_device(db, device_id_1)
-    device2 = device_crud.get_device(db, device_id_2)
+    device1 = phone_crud.get_phone(db, device_id_1)
+    device2 = phone_crud.get_phone(db, device_id_2)
     
     # Validasi: pastikan kedua device ada
     if not device1 or not device2:
@@ -41,7 +41,7 @@ def compare_two_devices(db: Session, device_id_1: int, device_id_2: int) -> Dict
     }
 
 
-def generate_highlights(device1: models.Device, device2: models.Device) -> List[str]:
+def generate_highlights(device1: models.Phone, device2: models.Phone) -> List[str]:
     """
     Generate list highlights yang membandingkan keunggulan 2 device.
     
@@ -91,7 +91,7 @@ def generate_highlights(device1: models.Device, device2: models.Device) -> List[
     return highlights
 
 
-def calculate_price_difference(device1: models.Device, device2: models.Device) -> float:
+def calculate_price_difference(device1: models.Phone, device2: models.Phone) -> float:
     """
     Menghitung selisih harga antara 2 device.
     

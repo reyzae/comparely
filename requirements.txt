@@ -8,3 +8,6 @@ jinja2
 python-multipart
 requests
 python-dotenv
+beautifulsoup4
+lxml
+fake-useragent

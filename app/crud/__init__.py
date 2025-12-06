@@ -8,15 +8,14 @@ Perbedaan CRUD vs Service:
 - Service: Business logic yang mungkin pakai beberapa CRUD operations
 
 Contoh import:
-    from app.crud import device, category
+    from app.crud import phone, category
     
     # Lalu pakai:
-    device.get_device(db, device_id=1)
+    phone.get_phone(db, phone_id=1)
     category.get_categories(db)
 """
 
-from . import device
+from . import phone
 from . import category
-from . import benchmark
 
-__all__ = ["device", "category", "benchmark"]
+__all__ = ["phone", "category"]

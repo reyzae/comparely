@@ -108,7 +108,7 @@ Format response dari AI tidak sesuai.
 Detail: {str(e)}"""
 
 
-def get_comparison_analysis(device1: models.Device, device2: models.Device) -> str:
+def get_comparison_analysis(device1: models.Phone, device2: models.Phone) -> str:
     """
     Mendapatkan analisis perbandingan 2 device dari AI.
     
@@ -188,7 +188,7 @@ Jangan gunakan format lain. Hanya kirim JSON yang valid. Jawab dalam bahasa Indo
 
 
 def get_ai_recommendation(
-    devices: List[models.Device],
+    devices: List[models.Phone],
     use_case: Optional[str] = None,
     max_price: Optional[float] = None
 ) -> Dict[str, any]:
