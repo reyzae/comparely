@@ -1,0 +1,139 @@
+body {
+    margin: 0;
+    font-family: "Poppins", Arial, sans-serif;
+    background: linear-gradient(135deg, #f0f0f0, #dcdcdc);
+}
+
+.container {
+    max-width: 1150px;
+    margin: 60px auto;
+    padding: 50px 40px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    animation: fadeIn 1.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.hero-text { flex: 1; min-width: 300px; }
+
+h1 {
+    font-size: 45px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 20px;
+}
+
+.highlight { color: #0077ff; }
+
+p {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #555;
+}
+
+.hero img {
+    flex: 1;
+    max-width: 450px;
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.section { margin-top: 60px; }
+
+.section h2 {
+    font-size: 34px;
+    margin-bottom: 15px;
+    color: #222;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+    margin-top: 25px;
+}
+
+.card {
+    padding: 25px;
+    background: #f9f9f9;
+    border-radius: 16px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+}
+
+.card h3 {
+    margin-bottom: 10px;
+    font-size: 22px;
+    color: #0077ff;
+}
+
+.team {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.team-card {
+    text-align: center;
+    padding: 25px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.12);
+    transition: 0.3s;
+}
+
+.team-card img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.team-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+}
+
+.cta {
+    margin-top: 60px;
+    text-align: center;
+    padding: 40px;
+    background: #0077ff;
+    border-radius: 18px;
+    color: white;
+}
+
+.cta h2 { font-size: 32px; }
+
+.cta p { color: #e6e6e6; margin-bottom: 20px; }
+
+.cta a {
+    display: inline-block;
+    padding: 14px 28px;
+    background: #ffffff;
+    color: #0077ff;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+}

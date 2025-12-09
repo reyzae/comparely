@@ -1,0 +1,78 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  padding: 70px;
+}
+/* NAVBAR FIXED DAN KONSISTEN UNTUK SEMUA HALAMAN */
+#navbar {
+    position: fixed;        /* agar tetap di atas */
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    box-sizing: border-box;
+    z-index: 9999;          /* selalu di depan */
+}
+
+#navbar a {
+    color: #77b1e7;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 16px;
+    transition: 0.2s;
+}
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.brand {
+    font-size: 22px;
+    font-weight: 700;
+    color: #77b1e7;
+}
+.logo {
+    height: 45px;   /* Atur ukuran logo */
+    width: auto;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 50px;
+  background: #e9f2ff;
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  color: #77b1e7;
+}
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 25px;
+}
+.nav-links a {
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.btn-start {
+  padding: 8px 15px;
+  background:#77b1e7;
+  border-radius: 8px;
+  color: white !important;
+}
+section {
+  padding: 40px;
+  font-size: 22px;
+}

@@ -1,0 +1,105 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compare Smartphone</title>
+  <link rel="stylesheet" href="compare.css" />
+</head>
+<body>
+ <div class="container">
+       <div id="navbar"></div>
+ <script src="navbar.js"></script>
+  <h1>Compare Smartphone</h1>
+  <div class="compare-box">
+    <div class="row">
+      <div class="col">
+        <label>Pilih HP Pertama</label>
+        <select id="hp1">
+          <option value="Samsung ">Samsung Galaxy S23</option>
+          <option value="Xiaomi ">Xiaomi 13T</option>
+          <option value="Vivo">Vivo V29</option>
+          <option value="Oppo">Oppo Reno 11</option>
+        </select>
+      </div>
+
+      <div class="col">
+        <label>Pilih HP Kedua</label>
+        <select id="hp2">
+          <option value="iPhone 14">iPhone 14</option>
+          <option value="Samsung Galaxy S22">Samsung Galaxy S22</option>
+          <option value="Poco F5">Xiaomi Poco F5</option>
+          <option value="Infinix GT 10 Pro">Infinix GT 10 Pro</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn" onclick="comparePhones()">Bandingkan</button>
+  </div>
+     <div id="footer"></div>
+    <script src="footer.js"></script>
+
+  <div id="result" class="result-box" style="display:none;"></div>
+</div>
+<script>
+function comparePhones() {
+  let hp1 = document.getElementById('hp1').value;
+  let hp2 = document.getElementById('hp2').value;
+
+  let specs = {
+    "Samsung Galaxy S23": {layar: 9, chipset: 9, kamera: 8, baterai: 8},
+    "Xiaomi 13T": {layar: 8, chipset: 8, kamera: 9, baterai: 9},
+    "Vivo V29": {layar: 8, chipset: 7, kamera: 9, baterai: 8},
+    "Oppo Reno 11": {layar: 8, chipset: 7, kamera: 8, baterai: 9},
+
+    "iPhone 14": {layar: 9, chipset: 10, kamera: 9, baterai: 7},
+    "Samsung Galaxy S22": {layar: 8, chipset: 8, kamera: 8, baterai: 7},
+    "Poco F5": {layar: 8, chipset: 9, kamera: 7, baterai: 9},
+    "Infinix GT 10 Pro": {layar: 8, chipset: 8, kamera: 7, baterai: 8}
+  };
+
+  function highlight(a, b) {
+    return a > b ? "highlight" : "";
+  }
+
+  let r = document.getElementById('result');
+  r.style.display = "block";
+
+  r.innerHTML = `
+    <div class='compare-title'>${hp1} vs ${hp2}</div>
+
+    <div class='spec-grid'>
+      <div class='spec-title'>Spesifikasi</div>
+      <div class='spec-title'>${hp1}</div>
+      <div class='spec-title'>${hp2}</div>
+    </div>
+
+    <div class='spec-grid'>
+      <div class='spec-title'>Layar</div>
+      <div class='spec ${highlight(specs[hp1].layar, specs[hp2].layar)}'>${specs[hp1].layar}/10</div>
+      <div class='spec ${highlight(specs[hp2].layar, specs[hp1].layar)}'>${specs[hp2].layar}/10</div>
+    </div>
+
+    <div class='spec-grid'>
+      <div class='spec-title'>Chipset</div>
+      <div class='spec ${highlight(specs[hp1].chipset, specs[hp2].chipset)}'>${specs[hp1].chipset}/10</div>
+      <div class='spec ${highlight(specs[hp2].chipset, specs[hp1].chipset)}'>${specs[hp2].chipset}/10</div>
+    </div>
+
+    <div class='spec-grid'>
+      <div class='spec-title'>Kamera</div>
+      <div class='spec ${highlight(specs[hp1].kamera, specs[hp2].kamera)}'>${specs[hp1].kamera}/10</div>
+      <div class='spec ${highlight(specs[hp2].kamera, specs[hp1].kamera)}'>${specs[hp2].kamera}/10</div>
+    </div>
+
+    <div class='spec-grid'>
+      <div class='spec-title'>Baterai</div>
+      <div class='spec ${highlight(specs[hp1].baterai, specs[hp2].baterai)}'>${specs[hp1].baterai}/10</div>
+      <div class='spec ${highlight(specs[hp2].baterai, specs[hp1].baterai)}'>${specs[hp2].baterai}/10</div>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>
