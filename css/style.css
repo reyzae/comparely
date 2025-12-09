@@ -172,8 +172,8 @@ img {
 
 /* WORKS */
 .works {
-    margin: 0px 50px;
-    margin-top: 10px;
+    margin: 0px 0px;
+    margin-top: 0px;
 }
 
 .works h2 {
@@ -202,3 +202,4 @@ footer a {
     color: black;
     align-items: center;
 }
+
