@@ -1,0 +1,239 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Devices (Mobile){% endblock %}
+{% block page_title %}Device Management{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Mobile-optimized card layout */
+    .device-cards {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .device-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .device-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+
+    .device-info h3 {
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+        color: #111827;
+    }
+
+    .device-brand {
+        color: #6B7280;
+        font-size: 0.875rem;
+    }
+
+    .device-specs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .spec-item {
+        font-size: 0.875rem;
+    }
+
+    .spec-label {
+        color: #6B7280;
+        display: block;
+    }
+
+    .spec-value {
+        color: #111827;
+        font-weight: 600;
+    }
+
+    .device-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    /* Floating Action Button */
+    .fab {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #06B6D4 0%, #14B8A6 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+        text-decoration: none;
+        transition: transform 0.2s ease;
+    }
+
+    .fab:hover {
+        transform: scale(1.1);
+    }
+
+    /* Filter Toggle */
+    .filter-toggle {
+        background: white;
+        border: 2px solid #E5E7EB;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+    }
+
+    .filter-content {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        display: none;
+    }
+
+    .filter-content.active {
+        display: block;
+    }
+
+    @media (min-width: 768px) {
+        .device-cards {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Filter Toggle (Mobile) -->
+<div class="filter-toggle" onclick="toggleFilter()">
+    <span><i class="fas fa-filter"></i> Filters</span>
+    <i class="fas fa-chevron-down" id="filterIcon"></i>
+</div>
+
+<!-- Filter Content -->
+<div class="filter-content" id="filterContent">
+    <form method="GET" action="/admin/devices/mobile">
+        <div class="form-group">
+            <input type="text" name="search" placeholder="Search devices..." value="{{ search }}" class="search-input">
+        </div>
+        <button type="submit" class="btn-primary" style="width: 100%;">
+            <i class="fas fa-search"></i> Search
+        </button>
+    </form>
+</div>
+
+<!-- Success/Error Messages -->
+{% if request.query_params.get('message') %}
+<div class="alert alert-success">
+    <i class="fas fa-check-circle"></i> {{ request.query_params.get('message') }}
+</div>
+{% endif %}
+
+<!-- Device Cards -->
+<div class="device-cards">
+    {% if devices %}
+    {% for device in devices %}
+    <div class="device-card">
+        <div class="device-card-header">
+            <div class="device-info">
+                <h3>{{ device.name }}</h3>
+                <div class="device-brand">{{ device.brand }}</div>
+            </div>
+            {% if device.category %}
+            <span class="badge">{{ device.category.name }}</span>
+            {% endif %}
+        </div>
+
+        <div class="device-specs">
+            <div class="spec-item">
+                <span class="spec-label">CPU</span>
+                <span class="spec-value">{{ device.cpu or 'N/A' }}</span>
+            </div>
+            <div class="spec-item">
+                <span class="spec-label">RAM</span>
+                <span class="spec-value">{{ device.ram or 'N/A' }}</span>
+            </div>
+            <div class="spec-item">
+                <span class="spec-label">Storage</span>
+                <span class="spec-value">{{ device.storage or 'N/A' }}</span>
+            </div>
+            <div class="spec-item">
+                <span class="spec-label">Price</span>
+                <span class="spec-value">
+                    {% if device.price %}
+                    Rp {{ "{:,.0f}".format(device.price) }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        <div class="device-actions">
+            <a href="/admin/devices/{{ device.id }}/edit" class="btn-sm btn-edit">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            <form method="POST" action="/admin/devices/{{ device.id }}/delete" style="display: inline;"
+                data-device-name="{{ device.name }}" onsubmit="return confirmDelete(this)">
+                <button type="submit" class="btn-sm btn-delete">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="device-card">
+        <p style="text-align: center; color: #6B7280;">
+            {% if search %}
+            No devices found matching "{{ search }}"
+            {% else %}
+            No devices yet.
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Floating Action Button -->
+<a href="/admin/devices/new" class="fab">
+    <i class="fas fa-plus"></i>
+</a>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Toggle filter
+    function toggleFilter() {
+        const content = document.getElementById('filterContent');
+        const icon = document.getElementById('filterIcon');
+        content.classList.toggle('active');
+        icon.classList.toggle('fa-chevron-down');
+        icon.classList.toggle('fa-chevron-up');
+    }
+
+    // Confirm delete
+    function confirmDelete(form) {
+        const deviceName = form.getAttribute('data-device-name');
+        return confirm(`Are you sure you want to delete device "${deviceName}"?`);
+    }
+</script>
+{% endblock %}

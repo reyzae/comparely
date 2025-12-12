@@ -1,0 +1,139 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Bulk Operations{% endblock %}
+{% block breadcrumb %}Bulk Operations{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <h1 class="page-title">Bulk Operations</h1>
+    <p class="page-description">Operasi massal untuk mengelola data</p>
+</div>
+
+<!-- Bulk Import -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-file-import"></i> Import Devices dari CSV
+        </h3>
+    </div>
+    <form method="post" action="/admin/bulk-operations/import" enctype="multipart/form-data">
+        <div class="form-group">
+            <label class="form-label">Upload File CSV</label>
+            <input type="file" name="csv_file" accept=".csv" class="form-input" required>
+            <small class="text-muted">
+                Format: name, brand, category_id, cpu, gpu, ram, storage, camera, battery, screen, release_year, price,
+                image_url, description
+            </small>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-upload"></i> Upload & Import
+        </button>
+        <a href="/static/templates/device_import_template.csv" class="btn btn-secondary" download>
+            <i class="fas fa-download"></i> Download Template
+        </a>
+    </form>
+</div>
+
+<!-- Bulk Category Assignment -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-tags"></i> Bulk Category Assignment
+        </h3>
+    </div>
+    <form method="post" action="/admin/bulk-operations/assign-category">
+        <div class="form-group">
+            <label class="form-label">Filter Brand</label>
+            <select name="brand" class="form-select" required>
+                <option value="">Pilih Brand</option>
+                {% for brand in brands %}
+                <option value="{{ brand }}">{{ brand }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Assign ke Category</label>
+            <select name="category_id" class="form-select" required>
+                <option value="">Pilih Category</option>
+                {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-check"></i> Assign Category
+        </button>
+    </form>
+</div>
+
+<!-- Bulk Price Update -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-dollar-sign"></i> Bulk Price Update
+        </h3>
+    </div>
+    <form method="post" action="/admin/bulk-operations/update-price">
+        <div class="form-group">
+            <label class="form-label">Filter Category</label>
+            <select name="category_id" class="form-select">
+                <option value="">Semua Category</option>
+                {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Adjustment Type</label>
+            <select name="adjustment_type" class="form-select" required>
+                <option value="percentage">Percentage (%)</option>
+                <option value="fixed">Fixed Amount (Rp)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Adjustment Value</label>
+            <input type="number" name="adjustment_value" class="form-input" step="0.01" required>
+            <small class="text-muted">
+                Gunakan nilai positif untuk menaikkan, negatif untuk menurunkan
+            </small>
+        </div>
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-sync"></i> Update Prices
+        </button>
+    </form>
+</div>
+
+<!-- Bulk Delete -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-trash-alt"></i> Bulk Delete Devices
+        </h3>
+    </div>
+    <form method="post" action="/admin/bulk-operations/delete"
+        onsubmit="return confirm('Apakah Anda yakin ingin menghapus devices ini? Tindakan ini tidak dapat dibatalkan!');">
+        <div class="form-group">
+            <label class="form-label">Filter by Year</label>
+            <select name="year" class="form-select">
+                <option value="">Pilih Tahun</option>
+                {% for year in years %}
+                <option value="{{ year }}">{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Filter by Brand</label>
+            <select name="brand" class="form-select">
+                <option value="">Pilih Brand</option>
+                {% for brand in brands %}
+                <option value="{{ brand }}">{{ brand }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-delete">
+            <i class="fas fa-trash"></i> Delete Matching Devices
+        </button>
+    </form>
+</div>
+{% endblock %}
