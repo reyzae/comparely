@@ -15,5 +15,6 @@ class Category(Base):
     # Nama kategori (unik, tidak boleh duplikat)
     name = Column(String(100), unique=True, index=True)
 
-    # Relationship: 1 category bisa punya banyak devices
-    devices = relationship("Device", back_populates="category")
+    # Relationship: 1 category bisa punya banyak phones
+    phones = relationship("Phone", back_populates="category")
+

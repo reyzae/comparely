@@ -36,4 +36,4 @@ class Category(CategoryBase):
     
     class Config:
         # Agar bisa convert dari SQLAlchemy model ke Pydantic
-        orm_mode = True
+        from_attributes = True

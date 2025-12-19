@@ -1,0 +1,277 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Settings{% endblock %}
+{% block breadcrumb %}Settings{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ========================================
+       SETTINGS PAGE - Better Organization & Mobile UX
+    ======================================== */
+
+    /* HIGH PRIORITY #1: Better Organization */
+    .card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e5e7eb;
+    }
+
+    .card-header {
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .card-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .card-title i {
+        color: #06b6d4;
+        font-size: 1.25rem;
+    }
+
+    /* Form styling */
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #374151;
+    }
+
+    .text-muted {
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    /* Button consistency */
+    .card .btn {
+        min-height: 48px;
+        padding: 0.75rem 1.5rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+
+    /* Database management buttons */
+    .card form {
+        display: inline-block;
+    }
+
+    /* HIGH PRIORITY #2: Mobile Optimization */
+    @media (max-width: 768px) {
+
+        /* Compact cards */
+        .card {
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .card-header {
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+        }
+
+        /* Stack forms vertically */
+        .card form {
+            display: block;
+            width: 100%;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Full-width buttons */
+        .card .btn {
+            width: 100%;
+            min-height: 48px;
+            /* Touch-friendly */
+        }
+
+        /* Form inputs full width */
+        .form-input,
+        .form-select {
+            width: 100%;
+        }
+
+        /* Better spacing */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Database management buttons stack */
+        .card div[style*="display: flex"] {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0.75rem !important;
+        }
+
+        /* System info table */
+        .admin-table {
+            font-size: 0.875rem;
+        }
+
+        .admin-table td {
+            padding: 0.75rem 0.5rem;
+        }
+
+        /* Bottom padding for bottom tabs */
+        .admin-main {
+            padding-bottom: 100px !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <h1 class="page-title">Settings</h1>
+    <p class="page-description">Konfigurasi sistem dan preferensi</p>
+</div>
+
+<!-- System Information -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-info-circle"></i> System Information
+        </h3>
+    </div>
+    <table class="admin-table">
+        <tr>
+            <td><strong>Application Name</strong></td>
+            <td>COMPARELY</td>
+        </tr>
+        <tr>
+            <td><strong>Version</strong></td>
+            <td>1.0.0</td>
+        </tr>
+        <tr>
+            <td><strong>Database</strong></td>
+            <td>{{ database_status }}</td>
+        </tr>
+        <tr>
+            <td><strong>Total Devices</strong></td>
+            <td>{{ total_devices }}</td>
+        </tr>
+        <tr>
+            <td><strong>Total Categories</strong></td>
+            <td>{{ total_categories }}</td>
+        </tr>
+    </table>
+</div>
+
+<!-- API Configuration -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-key"></i> API Configuration
+        </h3>
+    </div>
+    <form method="post" action="/admin/settings/update-api">
+        <div class="form-group">
+            <label class="form-label">AI API Key</label>
+            <input type="password" name="ai_api_key" class="form-input" value="{{ ai_api_key_masked }}"
+                placeholder="Enter AI API Key">
+            <small class="text-muted">
+                API key untuk fitur AI recommendation
+            </small>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Save API Settings
+        </button>
+    </form>
+</div>
+
+<!-- Database Management -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-database"></i> Database Management
+        </h3>
+    </div>
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <form method="post" action="/admin/settings/backup-database">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-download"></i> Backup Database
+            </button>
+        </form>
+
+        <form method="post" action="/admin/settings/optimize-database"
+            onsubmit="return confirm('Optimize database? Ini akan membersihkan data yang tidak diperlukan.');">
+            <button type="submit" class="btn btn-secondary">
+                <i class="fas fa-broom"></i> Optimize Database
+            </button>
+        </form>
+
+        <form method="post" action="/admin/reset-database"
+            onsubmit="return confirm('PERINGATAN: Ini akan menghapus SEMUA data devices! Apakah Anda yakin?');">
+            <button type="submit" class="btn btn-delete">
+                <i class="fas fa-exclamation-triangle"></i> Reset Database
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- UI Preferences -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-paint-brush"></i> UI Preferences
+        </h3>
+    </div>
+    <form method="post" action="/admin/settings/update-ui">
+        <div class="form-group">
+            <label class="form-label">Items Per Page</label>
+            <select name="items_per_page" class="form-select">
+                <option value="10">10</option>
+                <option value="20" selected>20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Date Format</label>
+            <select name="date_format" class="form-select">
+                <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                <option value="YYYY-MM-DD" selected>YYYY-MM-DD</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Save Preferences
+        </button>
+    </form>
+</div>
+
+<!-- Cache Management -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-sync"></i> Cache Management
+        </h3>
+    </div>
+    <p class="text-muted">Clear cache untuk memastikan data terbaru ditampilkan</p>
+    <form method="post" action="/admin/settings/clear-cache">
+        <button type="submit" class="btn btn-secondary">
+            <i class="fas fa-trash-alt"></i> Clear All Cache
+        </button>
+    </form>
+</div>
+{% endblock %}

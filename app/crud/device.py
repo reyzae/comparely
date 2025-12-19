@@ -4,7 +4,7 @@ from .. import models, schemas
 
 # ==================== READ OPERATIONS ====================
 
-def get_device(db: Session, device_id: int) -> Optional[models.Device]:
+def get_device(db: Session, device_id: int) -> Optional[models.Phone]:
     """
     Mengambil 1 device berdasarkan ID.
     
@@ -15,7 +15,7 @@ def get_device(db: Session, device_id: int) -> Optional[models.Device]:
     Returns:
         Device object jika ditemukan, None jika tidak ada
     """
-    return db.query(models.Device).filter(models.Device.id == device_id).first()
+    return db.query(models.Phone).filter(models.Phone.id == device_id).first()
 
 
 def get_devices(
@@ -23,7 +23,7 @@ def get_devices(
     skip: int = 0, 
     limit: int = 100, 
     search: Optional[str] = None
-) -> List[models.Device]:
+) -> List[models.Phone]:
     """
     Mengambil list devices dengan pagination dan search.
     
@@ -36,7 +36,7 @@ def get_devices(
     Returns:
         List of Device objects
     """
-    query = db.query(models.Device)
+    query = db.query(models.Phone)
     
     # Jika ada keyword search, filter berdasarkan nama ATAU brand
     # Menggunakan ilike() untuk case-insensitive search
@@ -44,8 +44,8 @@ def get_devices(
     if search:
         search_pattern = f"%{search}%"
         search_filter = (
-            models.Device.name.ilike(search_pattern) | 
-            models.Device.brand.ilike(search_pattern)
+            models.Phone.name.ilike(search_pattern) | 
+            models.Phone.brand.ilike(search_pattern)
         )
         query = query.filter(search_filter)
     
@@ -54,7 +54,7 @@ def get_devices(
 
 # ==================== CREATE OPERATIONS ====================
 
-def create_device(db: Session, device: schemas.DeviceCreate) -> models.Device:
+def create_device(db: Session, device: schemas.PhoneCreate) -> models.Phone:
     """
     Membuat device baru di database.
     
@@ -66,7 +66,7 @@ def create_device(db: Session, device: schemas.DeviceCreate) -> models.Device:
         Device object yang baru dibuat (dengan ID)
     """
     # Convert Pydantic schema ke SQLAlchemy model
-    db_device = models.Device(**device.dict())
+    db_device = models.Phone(**device.dict())
     
     # Tambahkan ke session
     db.add(db_device)
@@ -85,8 +85,8 @@ def create_device(db: Session, device: schemas.DeviceCreate) -> models.Device:
 def update_device(
     db: Session, 
     device_id: int, 
-    device: schemas.DeviceCreate
-) -> Optional[models.Device]:
+    device: schemas.PhoneCreate
+) -> Optional[models.Phone]:
     """
     Update data device yang sudah ada.
     

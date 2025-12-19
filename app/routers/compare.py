@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from ..core.deps import get_db  # Import get_db dari core.deps (centralized)
-from ..services import comparison_service, grok_service as ai_service
+from ..services import comparison_service, ai as ai_service
 from .. import schemas
 
 router = APIRouter(

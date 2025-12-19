@@ -2,13 +2,17 @@
 Models package - Database models (SQLAlchemy ORM)
 
 File ini mengumpulkan semua model dari file terpisah agar mudah di-import.
-Contoh: from app.models import Device, Category, Benchmark
+Contoh: from app.models import Phone, Category, User, Role
 """
 
 from ..database import Base
 from .category import Category
-from .device import Device
-from .benchmark import Benchmark
+from .phone import Phone
+from .user import User
+from .role import Role
+from .activity_log import ActivityLog
+from .notification import Notification
 
 # List semua model yang bisa di-import
-__all__ = ["Base", "Category", "Device", "Benchmark"]
+__all__ = ["Base", "Category", "Phone", "User", "Role", "ActivityLog", "Notification"]
+

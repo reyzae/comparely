@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from .routers import devices, compare, categories, recommendation, frontend
+# from starlette.middleware.sessions import SessionMiddleware  # Temporarily disabled
+from .routers import devices, compare, categories, recommendation, frontend, admin
 from .database import engine
 from .models import Base  # Import Base dari models package baru
 import os
@@ -17,6 +18,12 @@ app = FastAPI(
     description="Aplikasi Perbandingan Perangkat",
     version="1.0.0"
 )
+
+# Add SessionMiddleware for user authentication
+# Secret key untuk encrypt session cookies
+# SECRET_KEY = os.getenv("SECRET_KEY", "comparely-secret-key-change-in-production")
+# app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)  # Temporarily disabled
+
 
 @app.on_event("startup")
 async def startup_event():
@@ -49,12 +56,21 @@ async def startup_event():
     
     print("="*60 + "\n")
 
+# Favicon route
+from fastapi.responses import FileResponse
+
+@app.get("/favicon.ico")
+async def favicon():
+    """Serve favicon"""
+    return FileResponse("app/static/images/favicon.ico")
+
 # Folder untuk file CSS/Gambar
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Menambahkan router (halaman/fitur)
 # Frontend router harus di-include PERTAMA agar route "/" bisa handle HTML
 app.include_router(frontend.router)
+app.include_router(admin.router)  # Admin panel routes
 app.include_router(devices.router)
 app.include_router(compare.router)
 app.include_router(categories.router)

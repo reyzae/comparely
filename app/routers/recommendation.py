@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from ..core.deps import get_db
-from ..services import recommendation_service, grok_service as ai_service
+from ..services import recommendation_service, ai as ai_service
 from ..schemas.device import Device
 from ..core.config import USE_CASES
 

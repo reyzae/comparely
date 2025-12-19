@@ -1,22 +1,14 @@
 """
-CRUD package - Database operations (Create, Read, Update, Delete)
-
-File ini mengumpulkan semua CRUD operations dari file terpisah.
-
-Perbedaan CRUD vs Service:
-- CRUD: Operasi database langsung (query, insert, update, delete)
-- Service: Business logic yang mungkin pakai beberapa CRUD operations
-
-Contoh import:
-    from app.crud import device, category
-    
-    # Lalu pakai:
-    device.get_device(db, device_id=1)
-    category.get_categories(db)
+CRUD operations package.
+Berisi fungsi-fungsi untuk Create, Read, Update, Delete database.
 """
 
-from . import device
+# Import hanya modules yang essential dan sudah working
 from . import category
-from . import benchmark
+from . import device
 
-__all__ = ["device", "category", "benchmark"]
+# Export semua agar bisa di-import
+__all__ = [
+    "category",
+    "device"
+]

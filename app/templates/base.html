@@ -11,9 +11,10 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', path='/images/favicon.png') }}">
 
     <!-- CSS -->
+    <!-- Main Stylesheet with Design System -->
     <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/header.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/enhancements.css') }}">
+    
+    <!-- Mobile Responsive Styles -->
     <link rel="stylesheet" href="{{ url_for('static', path='/css/mobile.css') }}">
 
     {% block extra_css %}{% endblock %}
@@ -28,7 +29,15 @@
                 <span>COMPARELY</span>
             </a>
 
-            <nav class="nav">
+            <!-- Hamburger Menu Button (Mobile Only) -->
+            <button class="hamburger-menu" id="hamburgerMenu" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <!-- Navigation -->
+            <nav class="nav" id="navMenu">
                 <a href="/" class="nav-link {% if request.url.path == '/' %}active{% endif %}">Home</a>
                 <a href="/devices" class="nav-link {% if '/devices' in request.url.path %}active{% endif %}">Compare</a>
                 <a href="/features"
@@ -62,6 +71,7 @@
     <!-- Core Scripts - Load first (dependencies) -->
     <script src="{{ url_for('static', path='/js/autocomplete.js') }}"></script>
     <script src="{{ url_for('static', path='/js/utils.js') }}"></script>
+    <script src="{{ url_for('static', path='/js/mobile-menu.js') }}"></script>
 
     {% block extra_js %}{% endblock %}
 </body>

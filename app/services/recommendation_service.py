@@ -9,53 +9,53 @@ def get_recommendations(
     category_id: Optional[int] = None,
     min_release_year: Optional[int] = None,
     limit: int = 5
-) -> List[models.Device]:
+) -> List[models.Phone]:
     """
-    Memberikan rekomendasi device berdasarkan kriteria yang diberikan.
+    Memberikan rekomendasi phone berdasarkan kriteria yang diberikan.
     
     Logika sederhana untuk mahasiswa:
     1. Filter berdasarkan kriteria (harga, kategori, tahun)
     2. Sort berdasarkan tahun rilis (terbaru) dan harga (termurah)
-    3. Return top N devices
+    3. Return top N phones
     
     Args:
         db: Database session
         max_price: Harga maksimal yang diinginkan
         category_id: ID kategori (1=Smartphone, 2=Laptop, dll)
-        min_release_year: Tahun rilis minimal (misal: 2020 keatas)
-        limit: Jumlah maksimal rekomendasi yang dikembalikan
+        min_release_year: Tahun rilis minimal
+        limit: Berapa banyak rekomendasi yang dikembalikan
     
     Returns:
-        List of Device objects yang direkomendasikan
+        List of Phone objects
     """
-    # Mulai query dari semua device
-    query = db.query(models.Device)
+    # Mulai dengan query semua devices
+    query = db.query(models.Phone)
     
     # Filter berdasarkan harga maksimal
     if max_price is not None:
-        query = query.filter(models.Device.price <= max_price)
+        query = query.filter(models.Phone.price <= max_price)
     
     # Filter berdasarkan kategori
     if category_id is not None:
-        query = query.filter(models.Device.category_id == category_id)
+        query = query.filter(models.Phone.category_id == category_id)
     
     # Filter berdasarkan tahun rilis minimal
     if min_release_year is not None:
-        query = query.filter(models.Device.release_year >= min_release_year)
+        query = query.filter(models.Phone.release_year >= min_release_year)
     
     # Sort: Prioritas tahun terbaru, lalu harga termurah
     query = query.order_by(
-        models.Device.release_year.desc(),  # Tahun terbaru dulu
-        models.Device.price.asc()            # Harga termurah dulu
+        models.Phone.release_year.desc(),  # Tahun terbaru dulu
+        models.Phone.price.asc()            # Harga termurah dulu
     )
     
-    # Ambil top N devices
+    # Ambil top N phones
     return query.limit(limit).all()
 
 
-def calculate_device_score(device: models.Device) -> float:
+def calculate_device_score(device: models.Phone) -> float:
     """
-    Menghitung skor device berdasarkan beberapa faktor.
+    Menghitung skor phone berdasarkan beberapa faktor.
     Skor lebih tinggi = lebih direkomendasikan.
     
     Faktor yang dipertimbangkan:
@@ -63,10 +63,10 @@ def calculate_device_score(device: models.Device) -> float:
     - Harga (lebih murah = lebih baik, dengan normalisasi)
     
     Args:
-        device: Device object
+        device: Phone object
     
     Returns:
-        Skor device (float)
+        Skor phone (float)
     """
     score = 0.0
     
