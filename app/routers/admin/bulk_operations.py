@@ -10,6 +10,8 @@ from sqlalchemy.orm import Session
 from app.core.deps import get_db
 from app.models import Phone, Category
 from .auth import get_current_user
+from app.core.rbac_context import add_rbac_to_context
+
 import logging
 
 # Setup templates
@@ -26,11 +28,15 @@ async def admin_bulk_operations(request: Request, db: Session = Depends(get_db))
     
     categories = db.query(Category).all()
     
+    current_user = get_current_user(request, db)
+    rbac_context = add_rbac_to_context(current_user)
+
     return templates.TemplateResponse(
         "admin/bulk_operations.html",
         {
             "request": request,
-            "current_user": get_current_user(request, db),
+            "current_user": current_user,
+            **rbac_context,  # Add RBAC permissions
             "categories": categories
         }
     )

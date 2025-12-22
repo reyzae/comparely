@@ -51,15 +51,41 @@
 /* Fix: Wrapper untuk input agar autocomplete posisinya benar */
 .compare-input-wrapper {
     position: relative;
+    width: 100%;
+}
+
+.search-icon-wrapper {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9CA3AF;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
 }
 
 .compare-search-input {
     background: #FFFFFF !important;
     border: 1px solid #D1D5DB !important;
     width: 100%;
-    padding: 16px;
+    padding: 16px 16px 16px 48px;
+    /* Left padding for icon */
     font-size: 16px;
     border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+    .compare-inputs {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .vs-text {
+        display: none !important;
+    }
 }
 
 .compare-search-input:focus {

@@ -10,6 +10,8 @@ from sqlalchemy.orm import Session
 from app.core.deps import get_db
 from app.models import Phone, Category
 from .auth import get_current_user
+from app.core.rbac_context import add_rbac_to_context
+
 import csv
 import io
 import logging
@@ -25,11 +27,15 @@ router = APIRouter(tags=["admin-tools"])
 @router.get("/tools", response_class=HTMLResponse)
 async def admin_tools(request: Request, db: Session = Depends(get_db)):
     """Halaman admin tools"""
+    current_user = get_current_user(request, db)
+    rbac_context = add_rbac_to_context(current_user)
+
     return templates.TemplateResponse(
         "admin/tools.html",
         {
             "request": request,
-            "current_user": get_current_user(request, db)
+            "current_user": current_user,
+            **rbac_context,  # Add RBAC permissions
         }
     )
 

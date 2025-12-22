@@ -12,7 +12,8 @@ from .user import User
 from .role import Role
 from .activity_log import ActivityLog
 from .notification import Notification
+from .settings import AppSettings
 
 # List semua model yang bisa di-import
-__all__ = ["Base", "Category", "Phone", "User", "Role", "ActivityLog", "Notification"]
+__all__ = ["Base", "Category", "Phone", "User", "Role", "ActivityLog", "Notification", "AppSettings"]
 

@@ -11,6 +11,8 @@ from sqlalchemy import func, extract
 from app.core.deps import get_db
 from app.models import Phone, Category, User
 from .auth import get_current_user
+from app.core.rbac_context import add_rbac_to_context
+
 from datetime import datetime, timedelta
 
 # Setup templates
@@ -78,11 +80,15 @@ async def admin_analytics(request: Request, db: Session = Depends(get_db)):
         "> 20 juta": db.query(Phone).filter(Phone.price > 20000000).count()
     }
     
+    current_user = get_current_user(request, db)
+    rbac_context = add_rbac_to_context(current_user)
+
     return templates.TemplateResponse(
         "admin/analytics.html",
         {
             "request": request,
-            "current_user": get_current_user(request, db),
+            "current_user": current_user,
+            **rbac_context,  # Add RBAC permissions
             "total_devices": total_devices,
             "total_categories": total_categories,
             "total_brands": total_brands,

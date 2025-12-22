@@ -124,43 +124,50 @@ async def device_detail_page(
 async def devices_page(
     request: Request,
     category: Optional[str] = None,
-    max_price: Optional[str] = None,  # Ubah ke str untuk handle empty string
+    brand: Optional[str] = None,
+    ram: Optional[str] = None,
+    storage: Optional[str] = None,
+    max_price: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
     """
-    Halaman daftar semua device dengan filter.
+    Halaman daftar semua device dengan advanced filters.
     
     Cara kerja:
-    - Tampilkan semua device dalam bentuk grid
-    - User bisa filter berdasarkan kategori dan harga
+    - Tampilkan semua device dalam bentuk grid atau list
+    - User bisa filter berdasarkan kategori, brand, RAM, storage, dan harga
     - User bisa pilih 2 device untuk dibandingkan
     
-    Filter:
+    Filters:
     - category: 1 (Smartphone) atau 2 (Laptop)
+    - brand: Brand name (Samsung, Apple, dll)
+    - ram: RAM size (4GB, 8GB, dll)
+    - storage: Storage size (128GB, 256GB, dll)
     - max_price: Harga maksimal (contoh: 5000000)
     """
     
-    # Ambil semua device dari database
-    # Kalau ada filter, nanti kita filter di sini
-    devices = device_crud.get_devices(db, skip=0, limit=100)
+    # Get unique brands for filter dropdown
+    brands = device_crud.get_unique_brands(db)
     
-    # Filter berdasarkan kategori (kalau ada)
-    if category:
-        # Convert string ke integer
-        category_id = int(category)
-        # Filter device yang category_id-nya sesuai
-        devices = [d for d in devices if d.category_id == category_id]
-    
-    # Filter berdasarkan harga maksimal (kalau ada)
-    # Convert max_price dari string ke float (safely)
+    # Convert parameters
+    category_id = int(category) if category else None
+    max_price_float = None
     if max_price and max_price.strip():
         try:
             max_price_float = float(max_price)
-            # Filter device yang harganya <= max_price
-            devices = [d for d in devices if d.price and d.price <= max_price_float]
         except ValueError:
-            # Kalau user input bukan angka, ignore aja
             pass
+    
+    # Get filtered devices using new function
+    devices = device_crud.get_devices_filtered(
+        db=db,
+        category_id=category_id,
+        brand=brand if brand else None,
+        ram=ram if ram else None,
+        storage=storage if storage else None,
+        max_price=max_price_float,
+        limit=100
+    )
     
     # Render template devices.html dengan data
     return templates.TemplateResponse(
@@ -168,7 +175,11 @@ async def devices_page(
         {
             "request": request,
             "devices": devices,
+            "brands": brands,  # Pass brands list for dropdown
             "category": category,
+            "brand": brand,
+            "ram": ram,
+            "storage": storage,
             "max_price": max_price
         }
     )
@@ -239,12 +250,12 @@ async def compare_page(
         price_diff = abs(device1.price - device2.price)
         if device1.price < device2.price:
             highlights.append({
-                "category": "💰 Harga",
+                "category": "<i class='fa-solid fa-tag'></i> Harga",
                 "winner": f"{device1.name} lebih murah Rp {price_diff:,.0f}"
             })
         elif device2.price < device1.price:
             highlights.append({
-                "category": "💰 Harga",
+                "category": "<i class='fa-solid fa-tag'></i> Harga",
                 "winner": f"{device2.name} lebih murah Rp {price_diff:,.0f}"
             })
     
@@ -252,12 +263,12 @@ async def compare_page(
     if device1.release_year and device2.release_year:
         if device1.release_year > device2.release_year:
             highlights.append({
-                "category": "📅 Tahun Rilis",
+                "category": "<i class='fa-solid fa-calendar'></i> Tahun Rilis",
                 "winner": f"{device1.name} lebih baru ({device1.release_year})"
             })
         elif device2.release_year > device1.release_year:
             highlights.append({
-                "category": "📅 Tahun Rilis",
+                "category": "<i class='fa-solid fa-calendar'></i> Tahun Rilis",
                 "winner": f"{device2.name} lebih baru ({device2.release_year})"
             })
     
@@ -268,12 +279,12 @@ async def compare_page(
             ram2 = int(''.join(filter(str.isdigit, device2.ram)))
             if ram1 > ram2:
                 highlights.append({
-                    "category": "💾 RAM",
+                    "category": "<i class='fa-solid fa-memory'></i> RAM",
                     "winner": f"{device1.name} lebih besar ({device1.ram} vs {device2.ram})"
                 })
             elif ram2 > ram1:
                 highlights.append({
-                    "category": "💾 RAM",
+                    "category": "<i class='fa-solid fa-memory'></i> RAM",
                     "winner": f"{device2.name} lebih besar ({device2.ram} vs {device1.ram})"
                 })
         except:
@@ -286,12 +297,12 @@ async def compare_page(
             storage2 = int(''.join(filter(str.isdigit, device2.storage)))
             if storage1 > storage2:
                 highlights.append({
-                    "category": "💿 Storage",
+                    "category": "<i class='fa-solid fa-hard-drive'></i> Storage",
                     "winner": f"{device1.name} lebih besar ({device1.storage} vs {device2.storage})"
                 })
             elif storage2 > storage1:
                 highlights.append({
-                    "category": "💿 Storage",
+                    "category": "<i class='fa-solid fa-hard-drive'></i> Storage",
                     "winner": f"{device2.name} lebih besar ({device2.storage} vs {device1.storage})"
                 })
         except:
@@ -305,12 +316,12 @@ async def compare_page(
             cam2 = int(''.join(filter(str.isdigit, device2.camera.split('+')[0])))
             if cam1 > cam2:
                 highlights.append({
-                    "category": "📷 Kamera",
+                    "category": "<i class='fa-solid fa-camera'></i> Kamera",
                     "winner": f"{device1.name} lebih tinggi ({cam1}MP vs {cam2}MP)"
                 })
             elif cam2 > cam1:
                 highlights.append({
-                    "category": "📷 Kamera",
+                    "category": "<i class='fa-solid fa-camera'></i> Kamera",
                     "winner": f"{device2.name} lebih tinggi ({cam2}MP vs {cam1}MP)"
                 })
         except:
@@ -323,12 +334,12 @@ async def compare_page(
             bat2 = int(''.join(filter(str.isdigit, device2.battery)))
             if bat1 > bat2:
                 highlights.append({
-                    "category": "🔋 Baterai",
+                    "category": "<i class='fa-solid fa-battery-three-quarters'></i> Baterai",
                     "winner": f"{device1.name} lebih besar ({bat1} mAh vs {bat2} mAh)"
                 })
             elif bat2 > bat1:
                 highlights.append({
-                    "category": "🔋 Baterai",
+                    "category": "<i class='fa-solid fa-battery-three-quarters'></i> Baterai",
                     "winner": f"{device2.name} lebih besar ({bat2} mAh vs {bat1} mAh)"
                 })
         except:
@@ -341,12 +352,12 @@ async def compare_page(
             screen2 = float(''.join(c for c in device2.screen.split('"')[0] if c.isdigit() or c == '.'))
             if screen1 > screen2:
                 highlights.append({
-                    "category": "📺 Layar",
+                    "category": "<i class='fa-solid fa-display'></i> Layar",
                     "winner": f"{device1.name} lebih besar ({screen1}\" vs {screen2}\")"
                 })
             elif screen2 > screen1:
                 highlights.append({
-                    "category": "📺 Layar",
+                    "category": "<i class='fa-solid fa-display'></i> Layar",
                     "winner": f"{device2.name} lebih besar ({screen2}\" vs {screen1}\")"
                 })
         except:
@@ -394,3 +405,52 @@ async def about_page(request: Request):
         "about.html",
         {"request": request}
     )
+
+
+@router.get("/privacy", response_class=HTMLResponse)
+async def privacy_page(request: Request):
+    """
+    Halaman Privacy Policy - Menampilkan kebijakan privasi COMPARELY
+    
+    Penjelasan:
+    - Halaman statis yang menjelaskan kebijakan privasi
+    - Tidak perlu database query
+    - Hanya render template privacy.html
+    """
+    return templates.TemplateResponse(
+        "privacy.html",
+        {"request": request}
+    )
+
+
+@router.get("/terms", response_class=HTMLResponse)
+async def terms_page(request: Request):
+    """
+    Halaman Terms of Service - Menampilkan syarat dan ketentuan COMPARELY
+    
+    Penjelasan:
+    - Halaman statis yang menjelaskan syarat dan ketentuan
+    - Tidak perlu database query
+    - Hanya render template terms.html
+    """
+    return templates.TemplateResponse(
+        "terms.html",
+        {"request": request}
+    )
+
+
+@router.get("/contact", response_class=HTMLResponse)
+async def contact_page(request: Request):
+    """
+    Halaman Contact - Menampilkan informasi kontak COMPARELY
+    
+    Penjelasan:
+    - Halaman statis yang menampilkan informasi kontak tim
+    - Tidak perlu database query
+    - Hanya render template contact.html
+    """
+    return templates.TemplateResponse(
+        "contact.html",
+        {"request": request}
+    )
+

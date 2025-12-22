@@ -5,15 +5,17 @@ Handles device management (list, create, edit, delete, export).
 
 from typing import Optional, List
 from math import ceil
-from fastapi import APIRouter, Depends, Request, Form, HTTPException, Body
-from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse, JSONResponse
+from fastapi import APIRouter, Depends, Request, Form, UploadFile, File, Body
+from fastapi.responses import HTMLResponse, RedirectResponse, Response, JSONResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func, or_
 from app.core.deps import get_db
 from app.models import Phone, Category
 from .auth import get_current_user
-import io
+from app.core.rbac_context import add_rbac_to_context
 import csv
+import io
 import logging
 
 # Setup templates
@@ -51,7 +53,7 @@ async def admin_devices(
             pass
     
     if brand and brand.strip():
-        query = query.filter(Phone.brand == brand)
+        query = query.filter(Phone.brand.ilike(f"%{brand}%"))
     
     if year and year.strip():
         try:
@@ -61,51 +63,61 @@ async def admin_devices(
             pass
     
     # Search
-    if search:
+    if search and search.strip():
+        search_term = f"%{search}%"
         query = query.filter(
-            (Phone.name.ilike(f"%{search}%")) |
-            (Phone.brand.ilike(f"%{search}%"))
+            or_(
+                Phone.name.ilike(search_term),
+                Phone.brand.ilike(search_term)
+            )
         )
     
     # Sorting
-    sort_column = getattr(Phone, sort, Phone.id)
-    if order == "desc":
-        query = query.order_by(sort_column.desc())
-    else:
-        query = query.order_by(sort_column.asc())
+    valid_sorts = ["id", "name", "brand", "price", "release_year"]
+    if sort in valid_sorts:
+        order_column = getattr(Phone, sort)
+        if order == "desc":
+            query = query.order_by(order_column.desc())
+        else:
+            query = query.order_by(order_column.asc())
     
-    # Count total
+    # Pagination
     total_items = query.count()
-    total_pages = ceil(total_items / ITEMS_PER_PAGE) if total_items > 0 else 1
-    
-    # Paginate
+    total_pages = (total_items + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE
     offset = (page - 1) * ITEMS_PER_PAGE
     devices = query.offset(offset).limit(ITEMS_PER_PAGE).all()
     
-    # Get filter options
+    # Get categories for filter
     categories = db.query(Category).all()
-    brands = db.query(Phone.brand).distinct().filter(
-        Phone.brand.isnot(None)
-    ).all()
-    years = db.query(Phone.release_year).distinct().filter(
-        Phone.release_year.isnot(None)
-    ).order_by(Phone.release_year.desc()).all()
+    
+    # Get unique brands and years
+    brands = db.query(Phone.brand).distinct().order_by(Phone.brand).all()
+    brands = [b[0] for b in brands if b[0]]
+    
+    years = db.query(Phone.release_year).distinct().order_by(Phone.release_year.desc()).all()
+    years = [y[0] for y in years if y[0]]
+    
+    # Get current user and RBAC context
+    current_user = get_current_user(request, db)
+    rbac_context = add_rbac_to_context(current_user)
     
     return templates.TemplateResponse(
         "admin/devices_list.html",
         {
             "request": request,
-            "current_user": get_current_user(request, db),
+            "current_user": current_user,
+            **rbac_context,  # Add RBAC permissions
             "devices": devices,
+            "categories": categories,
+            "brands": brands,
+            "years": years,
             "page": page,
             "total_pages": total_pages,
-            "search": search or "",
-            "categories": categories,
-            "brands": [b[0] for b in brands],
-            "years": [y[0] for y in years],
-            "selected_category": category_id,
-            "selected_brand": brand,
-            "selected_year": year,
+            "total_items": total_items,
+            "search": search,
+            "category_id": category_id,
+            "brand": brand,
+            "year": year,
             "sort": sort,
             "order": order
         }

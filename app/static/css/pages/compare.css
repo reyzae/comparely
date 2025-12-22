@@ -105,6 +105,15 @@
     gap: 8px;
 }
 
+/* Font Awesome Icon Styling for Specs */
+.spec-label i {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+    color: #374151;
+    /* Consistent dark gray/black for all icons */
+}
+
 /* Icon untuk setiap spec */
 .spec-label::before {
     font-size: 18px;
@@ -175,9 +184,19 @@
 
 .highlight-card strong {
     color: #06B6D4;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     margin-bottom: 8px;
     font-size: 14px;
+}
+
+/* Colorful Icons for Highlight Categories */
+.highlight-card strong i {
+    font-size: 18px;
+    color: #374151;
+    /* Consistent dark gray/black for all icons */
 }
 
 .highlight-card span {

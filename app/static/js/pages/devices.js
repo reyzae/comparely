@@ -17,6 +17,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const compareButton = document.getElementById('compareButton');
     const clearButton = document.getElementById('clearButton');
 
+    // View toggle elements
+    const gridViewBtn = document.getElementById('gridViewBtn');
+    const listViewBtn = document.getElementById('listViewBtn');
+    const devicesGrid = document.getElementById('devicesGrid');
+    const devicesList = document.getElementById('devicesList');
+
     // ==========================================
     // VARIABEL GLOBAL
     // ==========================================
@@ -25,15 +31,92 @@ document.addEventListener('DOMContentLoaded', function () {
     let selectedDevices = [];
 
     // ==========================================
+    // VIEW TOGGLE FUNCTIONALITY
+    // ==========================================
+
+    // Load saved view preference from localStorage
+    const savedView = localStorage.getItem('devices_view_preference') || 'grid';
+    setView(savedView);
+
+    // Event listener untuk grid view button
+    if (gridViewBtn) {
+        gridViewBtn.addEventListener('click', function () {
+            setView('grid');
+            localStorage.setItem('devices_view_preference', 'grid');
+        });
+    }
+
+    // Event listener untuk list view button
+    if (listViewBtn) {
+        listViewBtn.addEventListener('click', function () {
+            setView('list');
+            localStorage.setItem('devices_view_preference', 'list');
+        });
+    }
+
+    /**
+     * Function untuk set view (grid atau list)
+     */
+    function setView(view) {
+        if (view === 'grid') {
+            // Show grid, hide list
+            if (devicesGrid) devicesGrid.style.display = 'grid';
+            if (devicesList) devicesList.style.display = 'none';
+
+            // Update button states
+            if (gridViewBtn) gridViewBtn.classList.add('active');
+            if (listViewBtn) listViewBtn.classList.remove('active');
+        } else {
+            // Show list, hide grid
+            if (devicesGrid) devicesGrid.style.display = 'none';
+            if (devicesList) devicesList.style.display = 'flex';
+
+            // Update button states
+            if (gridViewBtn) gridViewBtn.classList.remove('active');
+            if (listViewBtn) listViewBtn.classList.add('active');
+        }
+    }
+
+    // ==========================================
+    // PRICE SLIDER FUNCTIONALITY
+    // ==========================================
+
+    const priceSlider = document.getElementById('priceSlider');
+    const priceValue = document.getElementById('priceValue');
+
+    if (priceSlider && priceValue) {
+        // Format number to Rupiah
+        function formatRupiah(number) {
+            return 'Rp ' + number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        // Update price display and gradient
+        function updatePriceDisplay() {
+            const value = parseInt(priceSlider.value);
+            priceValue.textContent = formatRupiah(value);
+
+            // Update gradient fill
+            const percentage = (value / priceSlider.max) * 100;
+            priceSlider.style.background = `linear-gradient(to right, #06B6D4 0%, #06B6D4 ${percentage}%, #E5E7EB ${percentage}%, #E5E7EB 100%)`;
+        }
+
+        // Event listener for slider input
+        priceSlider.addEventListener('input', updatePriceDisplay);
+
+        // Initialize on page load
+        updatePriceDisplay();
+    }
+
+    // ==========================================
     // EVENT LISTENERS
     // ==========================================
 
-    // Event listener untuk semua checkbox device
+    // Event listener untuk semua checkbox device (both grid and list)
     document.querySelectorAll('.device-checkbox').forEach(checkbox => {
         checkbox.addEventListener('change', function () {
             const deviceId = this.getAttribute('data-id');
             const deviceName = this.getAttribute('data-name');
-            const card = this.closest('.device-item-card');
+            const card = this.closest('.device-item-card, .device-item-list');
 
             if (this.checked) {
                 // Tambah device ke selection
@@ -45,6 +128,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Update compare bar
             updateCompareBar();
+
+            // Sync checkboxes between grid and list view
+            syncCheckboxes(deviceId, this.checked);
         });
     });
 
@@ -92,14 +178,23 @@ document.addEventListener('DOMContentLoaded', function () {
     // ==========================================
 
     /**
+     * Function untuk sync checkboxes antara grid dan list view
+     */
+    function syncCheckboxes(deviceId, checked) {
+        document.querySelectorAll(`.device-checkbox[data-id="${deviceId}"]`).forEach(cb => {
+            cb.checked = checked;
+        });
+    }
+
+    /**
      * Function untuk tambah device ke selection
      */
     function addDevice(id, name, card) {
         // Cek apakah sudah ada 2 device
         if (selectedDevices.length >= 2) {
             // Uncheck checkbox yang baru diklik
-            const checkbox = card.querySelector('.device-checkbox');
-            checkbox.checked = false;
+            const checkboxes = document.querySelectorAll(`.device-checkbox[data-id="${id}"]`);
+            checkboxes.forEach(cb => cb.checked = false);
 
             // Tampilkan pesan ke user
             alert('Maksimal 2 device untuk dibandingkan!');
@@ -109,8 +204,13 @@ document.addEventListener('DOMContentLoaded', function () {
         // Tambah device ke array
         selectedDevices.push({ id, name });
 
-        // Tambah class 'selected' ke card
-        card.classList.add('selected');
+        // Tambah class 'selected' ke semua card dengan ID yang sama
+        document.querySelectorAll(`.device-checkbox[data-id="${id}"]`).forEach(cb => {
+            const parentCard = cb.closest('.device-item-card, .device-item-list');
+            if (parentCard) {
+                parentCard.classList.add('selected');
+            }
+        });
 
         console.log('Device ditambahkan:', name);
     }
@@ -122,8 +222,13 @@ document.addEventListener('DOMContentLoaded', function () {
         // Filter out device yang di-remove
         selectedDevices = selectedDevices.filter(device => device.id !== id);
 
-        // Remove class 'selected' dari card
-        card.classList.remove('selected');
+        // Remove class 'selected' dari semua card dengan ID yang sama
+        document.querySelectorAll(`.device-checkbox[data-id="${id}"]`).forEach(cb => {
+            const parentCard = cb.closest('.device-item-card, .device-item-list');
+            if (parentCard) {
+                parentCard.classList.remove('selected');
+            }
+        });
 
         console.log('Device dihapus, sisa:', selectedDevices.length);
     }
@@ -162,7 +267,7 @@ document.addEventListener('DOMContentLoaded', function () {
             checkbox.checked = false;
 
             // Remove selected class dari card
-            const card = checkbox.closest('.device-item-card');
+            const card = checkbox.closest('.device-item-card, .device-item-list');
             if (card) {
                 card.classList.remove('selected');
             }
@@ -183,5 +288,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Add fade-in animation ke device cards saat page load
     addFadeInAnimation('.device-item-card');
+    addFadeInAnimation('.device-item-list');
 
 });

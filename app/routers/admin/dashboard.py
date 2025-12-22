@@ -9,7 +9,9 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from app.core.deps import get_db
 from app.models import Phone, Category
-from .auth import get_current_user  # Import get_current_user
+from .auth import get_current_user
+from app.core.rbac_context import add_rbac_to_context
+  # Import get_current_user
 
 # Setup templates
 templates = Jinja2Templates(directory="app/templates")
@@ -47,28 +49,20 @@ async def admin_dashboard(request: Request, db: Session = Depends(get_db)):
         count = db.query(Phone).filter(Phone.brand == brand).count()
         brand_stats[brand] = count
     
+    current_user = get_current_user(request, db)
+    rbac_context = add_rbac_to_context(current_user)
+
     return templates.TemplateResponse(
         "admin/dashboard.html",
         {
             "request": request,
-            "current_user": get_current_user(request, db),  # Add current_user
+            "current_user": current_user,  # Add current_user
+            **rbac_context,  # Add RBAC permissions
             "total_devices": phone_count,
             "total_categories": category_count,
             "total_brands": brand_count,
             "latest_device_year": latest_year[0] if latest_year else "N/A",
             "category_stats": category_stats,
             "brand_stats": brand_stats
-        }
-    )
-
-
-@router.get("/tools", response_class=HTMLResponse)
-async def admin_tools(request: Request, db: Session = Depends(get_db)):
-    """Halaman admin tools"""
-    return templates.TemplateResponse(
-        "admin/tools.html",
-        {
-            "request": request,
-            "current_user": get_current_user(request, db)
         }
     )

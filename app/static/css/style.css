@@ -2,6 +2,21 @@
    COMPARELY - Main Stylesheet
    =================================== */
 
+/* Mobile Optimization - Prevent Overflow */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Responsive Media */
+img,
+video,
+iframe {
+  max-width: 100%;
+  height: auto;
+}
+
 /* CSS Variables - Design System V2 */
 :root {
   /* Primary Colors - Indigo (Modern & Trustworthy) */
@@ -173,13 +188,18 @@ a:hover {
    =================================== */
 
 .header {
-  background-color: var(--color-primary-light);
-  padding: var(--spacing-sm) 0;
+  background-color: var(--color-bg-white);
+  padding: var(--spacing-md) 0;
   border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: 0;
   z-index: 100;
   backdrop-filter: blur(10px);
+}
+
+/* Hamburger menu hidden by default (desktop) */
+.hamburger-menu {
+  display: none;
 }
 
 .header-container {
@@ -586,8 +606,7 @@ a:hover {
   }
 
   .header-container {
-    flex-direction: column;
-    gap: var(--spacing-sm);
+    padding: 0 var(--spacing-sm);
   }
 
   .nav {

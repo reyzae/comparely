@@ -9,6 +9,8 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from app.core.deps import get_db
 from .auth import get_current_user
+from app.core.rbac_context import add_rbac_to_context
+
 from datetime import datetime, timedelta
 from math import ceil
 from typing import Optional
@@ -76,11 +78,15 @@ async def admin_activity_logs(
     offset = (page - 1) * ITEMS_PER_PAGE
     logs = filtered_logs[offset:offset + ITEMS_PER_PAGE]
     
+    current_user = get_current_user(request, db)
+    rbac_context = add_rbac_to_context(current_user)
+
     return templates.TemplateResponse(
         "admin/activity_logs.html",
         {
             "request": request,
-            "current_user": get_current_user(request, db),
+            "current_user": current_user,
+            **rbac_context,  # Add RBAC permissions
             "logs": logs,
             "page": page,
             "total_pages": total_pages,

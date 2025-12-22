@@ -37,39 +37,39 @@
                 <!-- Spesifikasi Device 1 -->
                 <div class="specs-list">
                     <div class="spec-item">
-                        <span class="spec-label">⚡ Processor</span>
+                        <span class="spec-label"><i class="fa-solid fa-microchip"></i> Processor</span>
                         <span class="spec-value">{{ device1.cpu or 'N/A' }}</span>
                     </div>
                     <div class="spec-item">
-                        <span class="spec-label">🎮 GPU</span>
+                        <span class="spec-label"><i class="fa-solid fa-gamepad"></i> GPU</span>
                         <span class="spec-value">{{ device1.gpu or 'N/A' }}</span>
                     </div>
                     <div class="spec-item">
-                        <span class="spec-label">💾 RAM</span>
+                        <span class="spec-label"><i class="fa-solid fa-memory"></i> RAM</span>
                         <span class="spec-value">{{ device1.ram or 'N/A' }}</span>
                     </div>
                     <div class="spec-item">
-                        <span class="spec-label">💿 Storage</span>
+                        <span class="spec-label"><i class="fa-solid fa-hard-drive"></i> Storage</span>
                         <span class="spec-value">{{ device1.storage or 'N/A' }}</span>
                     </div>
                     <div class="spec-item">
-                        <span class="spec-label">📷 Camera</span>
+                        <span class="spec-label"><i class="fa-solid fa-camera"></i> Camera</span>
                         <span class="spec-value">{{ device1.camera or 'N/A' }}</span>
                     </div>
                     <div class="spec-item">
-                        <span class="spec-label">🔋 Battery</span>
+                        <span class="spec-label"><i class="fa-solid fa-battery-three-quarters"></i> Battery</span>
                         <span class="spec-value">{{ device1.battery or 'N/A' }}</span>
                     </div>
                     <div class="spec-item">
-                        <span class="spec-label">📺 Screen</span>
+                        <span class="spec-label"><i class="fa-solid fa-display"></i> Screen</span>
                         <span class="spec-value">{{ device1.screen or 'N/A' }}</span>
                     </div>
                     <div class="spec-item">
-                        <span class="spec-label">📅 Tahun Rilis</span>
+                        <span class="spec-label"><i class="fa-solid fa-calendar"></i> Tahun Rilis</span>
                         <span class="spec-value">{{ device1.release_year or 'N/A' }}</span>
                     </div>
                     <div class="spec-item price-item">
-                        <span class="spec-label">💰 Harga</span>
+                        <span class="spec-label"><i class="fa-solid fa-tag"></i> Harga</span>
                         <span class="spec-value price-value">Rp {{ "{:,.0f}".format(device1.price) if device1.price else
                             'N/A' }}</span>
                     </div>
@@ -87,39 +87,39 @@
                 <!-- Spesifikasi Device 2 -->
                 <div class="specs-list">
                     <div class="spec-item">
-                        <span class="spec-label">⚡ Processor</span>
+                        <span class="spec-label"><i class="fa-solid fa-microchip"></i> Processor</span>
                         <span class="spec-value">{{ device2.cpu or 'N/A' }}</span>
                     </div>
                     <div class="spec-item">
-                        <span class="spec-label">🎮 GPU</span>
+                        <span class="spec-label"><i class="fa-solid fa-gamepad"></i> GPU</span>
                         <span class="spec-value">{{ device2.gpu or 'N/A' }}</span>
                     </div>
                     <div class="spec-item">
-                        <span class="spec-label">💾 RAM</span>
+                        <span class="spec-label"><i class="fa-solid fa-memory"></i> RAM</span>
                         <span class="spec-value">{{ device2.ram or 'N/A' }}</span>
                     </div>
                     <div class="spec-item">
-                        <span class="spec-label">💿 Storage</span>
+                        <span class="spec-label"><i class="fa-solid fa-hard-drive"></i> Storage</span>
                         <span class="spec-value">{{ device2.storage or 'N/A' }}</span>
                     </div>
                     <div class="spec-item">
-                        <span class="spec-label">📷 Camera</span>
+                        <span class="spec-label"><i class="fa-solid fa-camera"></i> Camera</span>
                         <span class="spec-value">{{ device2.camera or 'N/A' }}</span>
                     </div>
                     <div class="spec-item">
-                        <span class="spec-label">🔋 Battery</span>
+                        <span class="spec-label"><i class="fa-solid fa-battery-three-quarters"></i> Battery</span>
                         <span class="spec-value">{{ device2.battery or 'N/A' }}</span>
                     </div>
                     <div class="spec-item">
-                        <span class="spec-label">📺 Screen</span>
+                        <span class="spec-label"><i class="fa-solid fa-display"></i> Screen</span>
                         <span class="spec-value">{{ device2.screen or 'N/A' }}</span>
                     </div>
                     <div class="spec-item">
-                        <span class="spec-label">📅 Tahun Rilis</span>
+                        <span class="spec-label"><i class="fa-solid fa-calendar"></i> Tahun Rilis</span>
                         <span class="spec-value">{{ device2.release_year or 'N/A' }}</span>
                     </div>
                     <div class="spec-item price-item">
-                        <span class="spec-label">💰 Harga</span>
+                        <span class="spec-label"><i class="fa-solid fa-tag"></i> Harga</span>
                         <span class="spec-value price-value">Rp {{ "{:,.0f}".format(device2.price) if device2.price else
                             'N/A' }}</span>
                     </div>
@@ -130,11 +130,11 @@
         <!-- Bagian Highlights (Mana yang Lebih Unggul) -->
         {% if highlights %}
         <div class="highlights-section">
-            <h3>🏆 Highlights Perbandingan</h3>
+            <h3><i class="fa-solid fa-trophy"></i> Highlights Perbandingan</h3>
             <div class="highlights-grid">
                 {% for highlight in highlights %}
                 <div class="highlight-card">
-                    <strong>{{ highlight.category }}</strong>
+                    <strong>{{ highlight.category|safe }}</strong>
                     <span>{{ highlight.winner }}</span>
                 </div>
                 {% endfor %}
@@ -144,7 +144,7 @@
 
         <!-- Bagian AI Analysis (Otomatis Muncul) -->
         <div class="ai-analysis-section" id="aiAnalysisSection">
-            <h3>🤖 Analisis AI</h3>
+            <h3><i class="fa-solid fa-robot"></i> Analisis AI</h3>
 
             <!-- Loading State (tampil pertama kali) -->
             <div class="ai-loading" id="aiLoading">
@@ -159,15 +159,17 @@
 
             <!-- Error State (tampil jika fetch gagal) -->
             <div class="ai-error" id="aiError" style="display: none;">
-                <p>❌ Maaf, analisis AI gagal dimuat.</p>
-                <button class="btn btn-primary" id="retryBtn">🔄 Coba Lagi</button>
+                <p><i class="fa-solid fa-circle-xmark"></i> Maaf, analisis AI gagal dimuat.</p>
+                <button class="btn btn-primary" id="retryBtn"><i class="fa-solid fa-rotate-right"></i> Coba
+                    Lagi</button>
             </div>
         </div>
 
         <!-- Tombol Kembali -->
         <div class="back-button-section">
-            <a href="/" class="btn btn-secondary">🏠 Kembali ke Homepage</a>
-            <a href="/devices" class="btn btn-primary" style="margin-left: 12px;">📱 Browse Devices</a>
+            <a href="/" class="btn btn-secondary"><i class="fa-solid fa-house"></i> Kembali ke Homepage</a>
+            <a href="/devices" class="btn btn-primary" style="margin-left: 12px;"><i
+                    class="fa-solid fa-mobile-screen-button"></i> Browse Devices</a>
         </div>
     </div>
 </section>

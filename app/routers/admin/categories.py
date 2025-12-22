@@ -11,6 +11,8 @@ from sqlalchemy.orm import Session
 from app.core.deps import get_db
 from app.models import Phone, Category
 from .auth import get_current_user
+from app.core.rbac_context import add_rbac_to_context
+
 import logging
 
 # Setup templates
@@ -64,11 +66,15 @@ async def admin_categories(
             "device_count": device_count
         })
     
+    current_user = get_current_user(request, db)
+    rbac_context = add_rbac_to_context(current_user)
+
     return templates.TemplateResponse(
         "admin/categories_list.html",
         {
             "request": request,
-            "current_user": get_current_user(request, db),
+            "current_user": current_user,
+            **rbac_context,  # Add RBAC permissions
             "category_stats": category_stats,
             "page": page,
             "total_pages": total_pages,
@@ -82,11 +88,15 @@ async def admin_categories(
 @router.get("/categories/new", response_class=HTMLResponse)
 async def admin_category_new(request: Request, db: Session = Depends(get_db)):
     """Form untuk create category baru"""
+    current_user = get_current_user(request, db)
+    rbac_context = add_rbac_to_context(current_user)
+
     return templates.TemplateResponse(
         "admin/category_form.html",
         {
             "request": request,
-            "current_user": get_current_user(request, db),
+            "current_user": current_user,
+            **rbac_context,  # Add RBAC permissions
             "category": None
         }
     )
@@ -103,11 +113,15 @@ async def admin_category_edit(
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
     
+    current_user = get_current_user(request, db)
+    rbac_context = add_rbac_to_context(current_user)
+
     return templates.TemplateResponse(
         "admin/category_form.html",
         {
             "request": request,
-            "current_user": get_current_user(request, db),
+            "current_user": current_user,
+            **rbac_context,  # Add RBAC permissions
             "category": category
         }
     )

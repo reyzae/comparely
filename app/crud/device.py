@@ -52,6 +52,73 @@ def get_devices(
     return query.offset(skip).limit(limit).all()
 
 
+def get_devices_filtered(
+    db: Session,
+    category_id: Optional[int] = None,
+    brand: Optional[str] = None,
+    ram: Optional[str] = None,
+    storage: Optional[str] = None,
+    max_price: Optional[float] = None,
+    skip: int = 0,
+    limit: int = 100
+) -> List[models.Phone]:
+    """
+    Mengambil list devices dengan multiple filters.
+    
+    Args:
+        db: Database session
+        category_id: Filter by category ID
+        brand: Filter by brand name
+        ram: Filter by RAM (e.g., "8GB")
+        storage: Filter by storage (e.g., "256GB")
+        max_price: Filter by maximum price
+        skip: Pagination offset
+        limit: Maximum results
+    
+    Returns:
+        List of filtered Device objects
+    """
+    query = db.query(models.Phone)
+    
+    # Filter by category
+    if category_id:
+        query = query.filter(models.Phone.category_id == category_id)
+    
+    # Filter by brand (case-insensitive)
+    if brand:
+        query = query.filter(models.Phone.brand.ilike(brand))
+    
+    # Filter by RAM (case-insensitive, partial match)
+    if ram:
+        query = query.filter(models.Phone.ram.ilike(f"%{ram}%"))
+    
+    # Filter by storage (case-insensitive, partial match)
+    if storage:
+        query = query.filter(models.Phone.storage.ilike(f"%{storage}%"))
+    
+    # Filter by max price
+    if max_price:
+        query = query.filter(models.Phone.price <= max_price)
+    
+    return query.offset(skip).limit(limit).all()
+
+
+def get_unique_brands(db: Session) -> List[str]:
+    """
+    Mengambil list brand yang unik dari database.
+    
+    Args:
+        db: Database session
+    
+    Returns:
+        List of unique brand names, sorted alphabetically
+    """
+    brands = db.query(models.Phone.brand).distinct().filter(models.Phone.brand.isnot(None)).all()
+    # Extract brand names from tuples and sort
+    brand_list = sorted([brand[0] for brand in brands if brand[0]])
+    return brand_list
+
+
 # ==================== CREATE OPERATIONS ====================
 
 def create_device(db: Session, device: schemas.PhoneCreate) -> models.Phone:

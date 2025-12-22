@@ -11,6 +11,8 @@ from sqlalchemy.orm import Session
 from app.core.deps import get_db
 from app.models import User, Role
 from .auth import get_current_user
+from app.core.rbac_context import add_rbac_to_context
+
 import logging
 import re
 
@@ -72,11 +74,15 @@ async def admin_users(
                 except:
                     user.role = None
         
+        current_user = get_current_user(request, db)
+        rbac_context = add_rbac_to_context(current_user)
+
         return templates.TemplateResponse(
             "admin/users_list.html",
             {
                 "request": request,
-                "current_user": get_current_user(request, db),
+                "current_user": current_user,
+                **rbac_context,  # Add RBAC permissions
                 "users": users,
                 "page": page,
                 "total_pages": total_pages,
@@ -87,11 +93,15 @@ async def admin_users(
         )
     except Exception as e:
         logger.exception(f"Error in admin_users: {e}")
+        current_user = get_current_user(request, db)
+        rbac_context = add_rbac_to_context(current_user)
+
         return templates.TemplateResponse(
             "admin/users_list.html",
             {
                 "request": request,
-                "current_user": get_current_user(request, db),
+                "current_user": current_user,
+                **rbac_context,  # Add RBAC permissions
                 "users": [],
                 "page": 1,
                 "total_pages": 1,
@@ -106,11 +116,15 @@ async def admin_users(
 async def admin_user_new(request: Request, db: Session = Depends(get_db)):
     """Form untuk create user baru"""
     roles = db.query(Role).all()
+    current_user = get_current_user(request, db)
+    rbac_context = add_rbac_to_context(current_user)
+
     return templates.TemplateResponse(
         "admin/user_form.html",
         {
             "request": request,
-            "current_user": get_current_user(request, db),
+            "current_user": current_user,
+            **rbac_context,  # Add RBAC permissions
             "user": None,
             "roles": roles
         }
@@ -129,11 +143,15 @@ async def admin_user_edit(
         raise HTTPException(status_code=404, detail="User not found")
     
     roles = db.query(Role).all()
+    current_user = get_current_user(request, db)
+    rbac_context = add_rbac_to_context(current_user)
+
     return templates.TemplateResponse(
         "admin/user_form.html",
         {
             "request": request,
-            "current_user": get_current_user(request, db),
+            "current_user": current_user,
+            **rbac_context,  # Add RBAC permissions
             "user": user,
             "roles": roles
         }
@@ -178,11 +196,15 @@ async def admin_roles(
     offset = (page - 1) * ITEMS_PER_PAGE
     roles = query.offset(offset).limit(ITEMS_PER_PAGE).all()
     
+    current_user = get_current_user(request, db)
+    rbac_context = add_rbac_to_context(current_user)
+
     return templates.TemplateResponse(
         "admin/roles_list.html",
         {
             "request": request,
-            "current_user": get_current_user(request, db),
+            "current_user": current_user,
+            **rbac_context,  # Add RBAC permissions
             "roles": roles,
             "page": page,
             "total_pages": total_pages,
@@ -196,11 +218,15 @@ async def admin_roles(
 @router.get("/roles/new", response_class=HTMLResponse)
 async def admin_role_new(request: Request, db: Session = Depends(get_db)):
     """Form untuk create role baru"""
+    current_user = get_current_user(request, db)
+    rbac_context = add_rbac_to_context(current_user)
+
     return templates.TemplateResponse(
         "admin/role_form.html",
         {
             "request": request,
-            "current_user": get_current_user(request, db),
+            "current_user": current_user,
+            **rbac_context,  # Add RBAC permissions
             "role": None
         }
     )
@@ -217,11 +243,15 @@ async def admin_role_edit(
     if not role:
         raise HTTPException(status_code=404, detail="Role not found")
     
+    current_user = get_current_user(request, db)
+    rbac_context = add_rbac_to_context(current_user)
+
     return templates.TemplateResponse(
         "admin/role_form.html",
         {
             "request": request,
-            "current_user": get_current_user(request, db),
+            "current_user": current_user,
+            **rbac_context,  # Add RBAC permissions
             "role": role
         }
     )

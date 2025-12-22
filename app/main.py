@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-# from starlette.middleware.sessions import SessionMiddleware  # Temporarily disabled
+from starlette.middleware.sessions import SessionMiddleware
 from .routers import devices, compare, categories, recommendation, frontend, admin
 from .database import engine
 from .models import Base  # Import Base dari models package baru
@@ -21,8 +21,8 @@ app = FastAPI(
 
 # Add SessionMiddleware for user authentication
 # Secret key untuk encrypt session cookies
-# SECRET_KEY = os.getenv("SECRET_KEY", "comparely-secret-key-change-in-production")
-# app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)  # Temporarily disabled
+SECRET_KEY = os.getenv("SECRET_KEY", "comparely-secret-key-change-in-production-please")
+app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
 
 @app.on_event("startup")

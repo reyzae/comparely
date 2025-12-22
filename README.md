@@ -2,21 +2,44 @@
 
 ![CI Status](https://github.com/reyzae/comparely/workflows/CI%20-%20COMPARELY/badge.svg)
 
-Aplikasi web untuk membandingkan dan memberikan rekomendasi perangkat teknologi (smartphone & laptop) berbasis **Python FastAPI** dan **MySQL**.
+Aplikasi web modern untuk membandingkan dan memberikan rekomendasi perangkat teknologi (smartphone & laptop) berbasis **Python FastAPI** dengan **Panel Admin** lengkap dan **Role-Based Access Control (RBAC)**.
 
 ---
 
-## 🎯 Fitur Utama
+## ✨ Fitur Utama
 
-1. **🌐 Web Interface**: Antarmuka web modern dan responsif
-2. **🔍 Pencarian Perangkat**: Cari perangkat berdasarkan nama atau brand
-3. **⚖️ Perbandingan**: Bandingkan 2 perangkat secara detail
-4. **🤖 AI Comparison**: Analisis perbandingan menggunakan AI
-5. **🎯 Rekomendasi**: Dapatkan rekomendasi perangkat sesuai budget dan kebutuhan
-6. **🧠 AI Recommendation**: Rekomendasi personal dari AI berdasarkan use case
-7. **📊 Benchmark**: Data performa perangkat
-8. **🏷️ Kategori**: Manajemen kategori perangkat
-9. **📥 CSV Import**: Import data perangkat dari file CSV
+### 🌐 **Fitur Publik**
+1. **Interface Web Modern**: Antarmuka responsif dengan design system yang konsisten
+2. **Pencarian Perangkat**: Cari perangkat berdasarkan nama, brand, atau spesifikasi
+3. **Perbandingan Detail**: Bandingkan 2 perangkat secara side-by-side
+4. **🤖 Perbandingan AI**: Analisis perbandingan menggunakan xAI Grok
+5. **Rekomendasi Cerdas**: Rekomendasi berdasarkan budget dan kebutuhan
+6. **🧠 Rekomendasi AI**: Rekomendasi personal dari AI berdasarkan use case
+7. **Filter & Sort**: Filter berdasarkan kategori, brand, tahun, dan harga
+8. **Desain Responsif**: Optimal di desktop, tablet, dan mobile
+
+### 🔐 **Fitur Panel Admin**
+1. **Dashboard Analytics**: Statistik lengkap dengan charts dan visualisasi
+2. **Manajemen Device**: Operasi CRUD untuk devices dengan bulk operations
+3. **Manajemen Kategori**: Kelola kategori perangkat
+4. **Manajemen User**: Kelola users dan roles
+5. **Role-Based Access Control (RBAC)**: 
+   - Super Admin: Akses penuh
+   - Admin: Operasi CRUD
+   - Viewer: Akses read-only
+6. **Activity Logs**: Tracking semua aktivitas admin
+7. **Bulk Operations**: Update multiple devices sekaligus
+8. **CSV Import/Export**: Import data dari CSV, export ke CSV
+9. **Tools & Utilities**: Optimasi database, pembersihan cache
+10. **Manajemen Settings**: Konfigurasi aplikasi dan API
+
+### 🔒 **Autentikasi & Keamanan**
+- ✅ Password hashing yang aman (bcrypt)
+- ✅ Manajemen session
+- ✅ Permission berbasis role
+- ✅ Protected admin routes
+- ✅ Fitur ganti password
+- ✅ User activity tracking
 
 ---
 
@@ -24,17 +47,21 @@ Aplikasi web untuk membandingkan dan memberikan rekomendasi perangkat teknologi 
 
 ### Backend
 - **Python 3.11+**
-- **FastAPI** - Modern web framework
+- **FastAPI** - Modern, fast web framework
 - **SQLAlchemy** - ORM untuk database
-- **Pydantic** - Validasi data
+- **Pydantic V2** - Validasi data
 - **Uvicorn** - ASGI server
-- **MySQL** - Database relational
-- **AI** - AI analysis & recommendations
+- **SQLite/MySQL** - Database (dapat dikonfigurasi)
+- **xAI Grok** - Analisis & rekomendasi AI
+- **bcrypt** - Password hashing
+- **Passlib** - Password utilities
 
 ### Frontend
-- **Jinja2** - Template engine untuk HTML
-- **Vanilla CSS** - Styling dengan design system
-- **Responsive Design** - Mobile-friendly layout
+- **Jinja2** - Template engine
+- **Vanilla CSS** - Custom design system
+- **Font Awesome** - Icons
+- **Google Fonts (Inter)** - Typography
+- **Responsive Design** - Mobile-first approach
 
 ---
 
@@ -43,51 +70,77 @@ Aplikasi web untuk membandingkan dan memberikan rekomendasi perangkat teknologi 
 ```
 comparely/
 ├── app/
-│   ├── core/              # Core utilities (config, dependencies)
-│   ├── crud/              # CRUD operations (devices, categories)
-│   ├── models/            # SQLAlchemy models (Device, Category, Benchmark)
-│   ├── routers/           # API endpoints (devices, compare, recommendation)
-│   ├── schemas/           # Pydantic schemas (request/response)
-│   ├── services/          # Business logic (comparison, AI services)
-│   ├── static/            # Static files (CSS, JS, images)
-│   ├── templates/         # Jinja2 templates (HTML)
-│   ├── database.py        # Database connection
-│   └── main.py            # FastAPI application entry point
-├── data/
-│   └── devices.csv        # Sample CSV data for import
-├── docs/
-│   ├── flowcharts.md      # Mermaid flowcharts & diagrams
-│   ├── api_ai_endpoints.md  # AI endpoints documentation
-│   ├── import_guide.md    # CSV import guide
-│   └── troubleshooting.md # Common issues & solutions
-├── .github/
-│   └── workflows/
-│       └── ci.yml         # GitHub Actions CI workflow
-├── import_csv.py          # Script untuk import data dari CSV
-├── init_db.py             # Script inisialisasi database
-├── requirements.txt       # Python dependencies
-├── .env.example           # Environment variables template
-├── TROUBLESHOOTING.md     # Panduan troubleshooting
-└── README.md              # Dokumentasi ini
+│   ├── core/              # Modul inti
+│   │   ├── config.py      # Konfigurasi
+│   │   ├── deps.py        # Dependencies
+│   │   ├── rbac.py        # RBAC middleware
+│   │   └── rbac_context.py # RBAC template helpers
+│   ├── crud/              # Operasi CRUD
+│   ├── models/            # SQLAlchemy models
+│   │   ├── phone.py       # Model device
+│   │   ├── category.py    # Model kategori
+│   │   ├── user.py        # Model user
+│   │   ├── role.py        # Model role
+│   │   └── activity_log.py # Model activity log
+│   ├── routers/           # API routes
+│   │   ├── admin/         # Routes panel admin
+│   │   │   ├── auth.py    # Autentikasi
+│   │   │   ├── dashboard.py
+│   │   │   ├── devices.py
+│   │   │   ├── categories.py
+│   │   │   ├── users.py
+│   │   │   ├── analytics.py
+│   │   │   ├── tools.py
+│   │   │   ├── settings.py
+│   │   │   ├── activity_logs.py
+│   │   │   └── bulk_operations.py
+│   │   ├── frontend.py    # Routes publik
+│   │   ├── devices.py     # Device API
+│   │   ├── compare.py     # Comparison API
+│   │   ├── recommendation.py # Recommendation API
+│   │   └── categories.py  # Category API
+│   ├── services/          # Business logic
+│   │   ├── comparison_service.py
+│   │   ├── recommendation_service.py
+│   │   └── ai_service.py  # Integrasi xAI Grok
+│   ├── static/            # File statis
+│   │   ├── css/          # Stylesheets
+│   │   ├── js/           # JavaScript
+│   │   └── images/       # Gambar & icons
+│   ├── templates/         # Template Jinja2
+│   │   ├── admin/        # Template panel admin
+│   │   └── public/       # Template publik
+│   ├── utils/            # Utilities
+│   ├── database.py       # Koneksi database
+│   └── main.py           # Entry point aplikasi
+├── scripts/              # Utility scripts
+│   ├── utils/           # Admin & DB utilities
+│   │   ├── create_admin_simple.py
+│   │   ├── reset_all_passwords.py
+│   │   ├── create_sample_users.py
+│   │   ├── reset_database.py
+│   │   └── init_db.py
+│   ├── import_csv.py    # Import CSV
+│   ├── scrape_gsmarena.py # Scraping data
+│   └── README.md        # Dokumentasi scripts
+├── docs/                # Dokumentasi
+│   ├── AUTHENTICATION.md    # Panduan sistem auth
+│   ├── RBAC_GUIDE.md       # Implementasi RBAC
+│   ├── RBAC_STATUS.md      # Status & contoh RBAC
+│   ├── SECRET_KEY_SETUP.md # Setup keamanan
+│   └── FINAL_SUMMARY.md    # Ringkasan lengkap
+├── data/                # File data
+├── tests/               # File testing
+├── .env.example         # Template environment
+├── .gitignore          # Aturan Git ignore
+├── requirements.txt    # Dependencies Python
+├── DEPLOYMENT_GUIDE.md # Panduan deployment
+└── README.md           # File ini
 ```
-
-### Mapping Proposal → Codebase
-
-| Proposal Section | Implementation | Location |
-|-----------------|----------------|----------|
-| FastAPI Backend | ✅ Implemented | `app/main.py`, `app/routers/` |
-| MySQL Database | ✅ Implemented | `app/database.py`, `app/models/` |
-| Device CRUD | ✅ Implemented | `app/crud/device.py` |
-| Comparison Service | ✅ Implemented | `app/services/comparison_service.py` |
-| AI Integration (AI) | ✅ Implemented | `app/services/ai_service.py`, `app/services/AI_service.py` |
-| Recommendation Engine | ✅ Implemented | `app/services/recommendation_service.py` |
-| CSV Import | ✅ Implemented | `import_csv.py` |
-| Flowcharts & Documentation | ✅ Implemented | `docs/flowcharts.md` |
-| **Web Frontend** | ✅ **Implemented** | `app/templates/`, `app/static/`, `app/routers/frontend.py` |
 
 ---
 
-## 🚀 Cara Menjalankan
+## 🚀 Panduan Cepat
 
 ### 1. Clone Repository
 ```bash
@@ -97,10 +150,12 @@ cd comparely
 
 ### 2. Setup Virtual Environment
 ```bash
-python -m venv .venv
 # Windows
+python -m venv .venv
 .venv\Scripts\activate
+
 # Linux/Mac
+python3 -m venv .venv
 source .venv/bin/activate
 ```
 
@@ -109,226 +164,288 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Setup Database
+### 4. Setup Environment Variables
 ```bash
-# Buat database MySQL bernama 'comparely'
-mysql -u root -p -e "CREATE DATABASE comparely;"
-
-# Copy .env.example ke .env dan sesuaikan konfigurasi
+# Copy file example
 cp .env.example .env
-```
 
-Edit `.env`:
-```env
-DATABASE_URL=mysql+mysqlconnector://root:password@localhost/comparely
-AI_API_KEY=your_AI_API_KEY_here
+# Edit .env dan konfigurasi:
+# - DATABASE_URL (SQLite secara default)
+# - AI_API_KEY (opsional, untuk fitur AI)
+# - SECRET_KEY (generate dengan: python -c "import secrets; print(secrets.token_urlsafe(32))")
 ```
 
 ### 5. Inisialisasi Database
 ```bash
-python init_db.py
+python scripts/utils/init_db.py
 ```
 
-### 6. Import Data (Opsional)
+### 6. Buat User Admin
 ```bash
-# Import dari CSV
-python import_csv.py data/devices.csv
+python scripts/utils/create_admin_simple.py
+
+# Ikuti prompt untuk membuat user admin
+# Default: admin / admin123
 ```
 
-### 7. Jalankan Server
+### 7. Import Data Sample (Opsional)
+```bash
+python scripts/import_csv.py
+```
+
+### 8. Jalankan Aplikasi
 ```bash
 uvicorn app.main:app --reload
+
+# Aplikasi akan tersedia di:
+# - Publik: http://localhost:8000
+# - Admin: http://localhost:8000/admin/login
 ```
-
-Server akan berjalan di: `http://localhost:8000`
-
-### 8. Akses Web Interface
-
-Setelah server berjalan, buka browser dan akses:
-
-- **Homepage**: http://localhost:8000
-- **API Documentation (Swagger)**: http://localhost:8000/docs
-- **API Documentation (ReDoc)**: http://localhost:8000/redoc
 
 ---
 
-## 📥 CSV Import Guide
+## 🔐 Kredensial Login Default
 
-### Format CSV
-File CSV harus memiliki header berikut:
-```csv
-name,brand,category_id,cpu,gpu,ram,storage,camera,battery,screen,release_year,price,image_url,source_data
-```
+Setelah menjalankan `create_admin_simple.py`:
 
-### Contoh Data
-```csv
-iPhone 15 Pro,Apple,1,A17 Pro,Apple GPU,8GB,256GB,48MP + 12MP,3274 mAh,6.1" OLED,2023,12000000,https://...,GSMArena
-Samsung Galaxy S24,Samsung,1,Snapdragon 8 Gen 3,Adreno 750,8GB,256GB,50MP + 12MP,4000 mAh,6.2" AMOLED,2024,11000000,https://...,GSMArena
-```
+| Username | Password | Role | Level Akses |
+|----------|----------|------|-------------|
+| admin | admin123 | Super Admin | Akses penuh |
 
-### Cara Import
-```bash
-# Default: membaca dari data/devices.csv
-python import_csv.py
-
-# Custom path
-python import_csv.py path/to/your/file.csv
-```
-
-### Validasi
-Script akan otomatis:
-- ✅ Validasi field wajib (name, brand, category_id, price)
-- ✅ Konversi tipe data (integer, decimal)
-- ✅ Handle missing values dengan default 'N/A'
-- ✅ Menampilkan summary hasil import
+**⚠️ PENTING**: Ganti password default setelah login pertama kali!
 
 ---
 
-## 🧪 Testing & CI
+## 📚 Dokumentasi
 
-### Run Tests Locally
+### Dokumentasi Inti
+- **[AUTHENTICATION.md](docs/AUTHENTICATION.md)** - Panduan sistem autentikasi
+- **[RBAC_GUIDE.md](docs/RBAC_GUIDE.md)** - Implementasi Role-Based Access Control
+- **[RBAC_STATUS.md](docs/RBAC_STATUS.md)** - Status dan contoh RBAC
+- **[SECRET_KEY_SETUP.md](docs/SECRET_KEY_SETUP.md)** - Konfigurasi keamanan
+- **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Panduan deployment
+
+### Dokumentasi Scripts
+- **[scripts/README.md](scripts/README.md)** - Panduan utility scripts
+
+---
+
+## 🎯 Checklist Fitur
+
+### ✅ Sudah Diimplementasikan
+- [x] Backend FastAPI
+- [x] SQLAlchemy ORM dengan dukungan SQLite/MySQL
+- [x] Operasi CRUD Device
+- [x] Manajemen kategori
+- [x] Service perbandingan (rule-based + AI)
+- [x] Engine rekomendasi (rule-based + AI)
+- [x] Integrasi xAI Grok
+- [x] Import/Export CSV
+- [x] **Panel Admin Lengkap**
+- [x] **Autentikasi User (bcrypt)**
+- [x] **Role-Based Access Control (RBAC)**
+- [x] **Manajemen Session**
+- [x] **Activity Logging**
+- [x] **Dashboard Analytics**
+- [x] **Bulk Operations**
+- [x] **Desain Responsif**
+- [x] **UI/UX Modern**
+
+### 🔄 Dalam Pengembangan
+- [ ] Notifikasi email
+- [ ] Filter lanjutan
+- [ ] API rate limiting
+- [ ] Caching layer
+
+### 📋 Direncanakan
+- [ ] Mobile app (React Native)
+- [ ] Analytics lanjutan
+- [ ] Dukungan multi-bahasa
+- [ ] Dark mode
+
+---
+
+## 🔒 Fitur Keamanan
+
+1. **Keamanan Password**
+   - Bcrypt hashing (cost factor 12)
+   - Validasi kekuatan password
+   - Reset password yang aman
+
+2. **Keamanan Session**
+   - Session cookies terenkripsi
+   - SECRET_KEY yang dapat dikonfigurasi
+   - Session timeout
+
+3. **Kontrol Akses**
+   - Permission berbasis role
+   - Proteksi route
+   - Penyembunyian elemen UI berdasarkan role
+
+4. **Proteksi Data**
+   - Pencegahan SQL injection (SQLAlchemy)
+   - Proteksi XSS (Jinja2 auto-escaping)
+   - Proteksi CSRF (direkomendasikan untuk produksi)
+
+---
+
+## 🎨 Fitur Panel Admin
+
+### Dashboard
+- Statistik total devices, kategori, users
+- Feed aktivitas terbaru
+- Quick actions
+- Charts dan visualisasi
+
+### Manajemen Device
+- List semua devices dengan pagination
+- Search dan filter (kategori, brand, tahun)
+- Create, edit, delete devices
+- Bulk operations (update kategori, penyesuaian harga)
+- Import/export CSV
+
+### Manajemen User
+- Kelola users dan roles
+- Assign permissions
+- Lihat aktivitas user
+- Aktivasi/deaktivasi users
+
+### Analytics
+- Statistik device per kategori
+- Charts distribusi harga
+- Analisis brand
+- Tren per tahun
+
+### Tools
+- Utility import CSV
+- Optimasi database
+- Manajemen cache
+- Pengecekan kesehatan sistem
+
+---
+
+## 🌐 API Endpoints
+
+### API Publik
+- `GET /` - Homepage
+- `GET /devices` - Daftar device
+- `GET /devices/{id}` - Detail device
+- `GET /search` - Pencarian devices
+- `GET /compare` - Bandingkan devices
+- `GET /api/compare` - API perbandingan (rule-based)
+- `GET /api/compare/ai` - Perbandingan AI
+- `GET /api/recommendation` - API rekomendasi
+- `GET /api/recommendation/ai` - Rekomendasi AI
+
+### API Admin
+- `GET /admin/login` - Halaman login
+- `POST /admin/login` - Handler login
+- `GET /admin/logout` - Logout
+- `GET /admin/dashboard` - Dashboard
+- `GET /admin/devices` - Manajemen device
+- `GET /admin/users` - Manajemen user
+- `GET /admin/analytics` - Analytics
+- ... dan lainnya
+
+Lihat dokumentasi API lengkap di komentar kode.
+
+---
+
+## 🧪 Testing
+
 ```bash
-# Install pytest
-pip install pytest pytest-cov
-
-# Run all tests
+# Jalankan tests
 pytest
 
-# Run with coverage
-pytest --cov=app --cov-report=term-missing
+# Jalankan dengan coverage
+pytest --cov=app tests/
+
+# Jalankan test spesifik
+pytest tests/test_basic.py
 ```
 
-### Continuous Integration
-Project ini menggunakan **GitHub Actions** untuk CI/CD:
+---
 
-- ✅ Automated testing pada setiap push/PR
-- ✅ Python 3.11 & 3.12 compatibility check
-- ✅ Code linting dengan flake8
-- ✅ Model validation
-- ✅ Syntax validation untuk import_csv.py
+## 📦 Deployment
 
-Lihat workflow di: `.github/workflows/ci.yml`
+Lihat **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** untuk panduan deployment lengkap.
+
+### Quick Deploy (Production)
+
+1. **Set environment variables**:
+```bash
+export DATABASE_URL="mysql://user:pass@host/dbname"
+export SECRET_KEY="your-secure-random-key"
+export AI_API_KEY="your-xai-api-key"
+```
+
+2. **Jalankan dengan Gunicorn**:
+```bash
+gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker
+```
+
+3. **Atau gunakan Docker** (jika Dockerfile tersedia):
+```bash
+docker build -t comparely .
+docker run -p 8000:8000 comparely
+```
 
 ---
 
-## 📖 API Documentation
+## 🤝 Kontribusi
 
-Setelah server berjalan, akses dokumentasi interaktif:
+Kontribusi sangat diterima! Silakan:
 
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-
-### Endpoint Utama
-
-#### Devices
-- `GET /devices/` - List semua devices
-- `GET /devices/{id}` - Detail device
-- `GET /devices/search?query=...` - Cari device
-
-#### Comparison
-- `POST /compare/` - Bandingkan 2 devices (rule-based)
-- `POST /compare/ai` - Bandingkan dengan AI analysis
-
-#### Recommendation
-- `GET /recommendation/` - Rekomendasi devices
-- `POST /recommendation/ai` - Rekomendasi dengan AI
-
-#### Categories
-- `GET /categories/` - List semua kategori
-
----
-
-## 📚 Dokumentasi Lengkap
-
-- [Flowcharts & Diagrams](docs/flowcharts.md) - Visual sistem architecture
-- [AI Endpoints Guide](docs/api_ai_endpoints.md) - Panduan AI features
-- [CSV Import Guide](docs/import_guide.md) - Detail import process
-- [Troubleshooting](TROUBLESHOOTING.md) - Panduan mengatasi masalah umum
-
----
-
-## 👥 Tim COMPARELY
-
-**Ketua**: Reyza Wirakusuma [17250107]
-
-**Anggota**:
-- Rachmat Muhaimin Rustam [17250381]
-- Tegar Apdiansyah [17250651]
-- Abdul Khair [17250610]
-- Rofik Rokhmattullah [17250705]
+1. Fork repository
+2. Buat feature branch (`git checkout -b feature/FiturKeren`)
+3. Commit perubahan (`git commit -m 'Tambah fitur keren'`)
+4. Push ke branch (`git push origin feature/FiturKeren`)
+5. Buat Pull Request
 
 ---
 
 ## 📄 Lisensi
 
-Project ini dibuat untuk keperluan tugas kuliah **Dasar Pemrograman**.
+Project ini dilisensikan di bawah MIT License - lihat file LICENSE untuk detail.
 
 ---
 
-## 📚 Resources untuk Belajar
+## 👥 Tim
 
-### Backend Development
-
-#### FastAPI
-- **Official Documentation**: https://fastapi.tiangolo.com/
-- **Tutorial Lengkap**: https://fastapi.tiangolo.com/tutorial/
-- **Advanced User Guide**: https://fastapi.tiangolo.com/advanced/
-
-#### SQLAlchemy & Database
-- **SQLAlchemy Documentation**: https://docs.sqlalchemy.org/
-- **SQLAlchemy ORM Tutorial**: https://docs.sqlalchemy.org/en/20/tutorial/
-- **MySQL Documentation**: https://dev.mysql.com/doc/
-
-#### Python Best Practices
-- **PEP 8 Style Guide**: https://pep8.org/
-- **Python Type Hints**: https://docs.python.org/3/library/typing.html
-- **Pydantic Documentation**: https://docs.pydantic.dev/
-
-### Frontend Development
-
-#### Jinja2 Templates
-- **Jinja2 Documentation**: https://jinja.palletsprojects.com/
-- **Template Designer Documentation**: https://jinja.palletsprojects.com/en/3.1.x/templates/
-- **FastAPI with Templates**: https://fastapi.tiangolo.com/advanced/templates/
-
-#### CSS & Design
-- **CSS Tricks - Complete Guide to Grid**: https://css-tricks.com/snippets/css/complete-guide-grid/
-- **CSS Tricks - Complete Guide to Flexbox**: https://css-tricks.com/snippets/css/a-guide-to-flexbox/
-- **MDN CSS Documentation**: https://developer.mozilla.org/en-US/docs/Web/CSS
-- **Web.dev - Responsive Design**: https://web.dev/responsive-web-design-basics/
-
-#### Design Systems
-- **CSS Variables Guide**: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties
-- **Material Design**: https://material.io/design
-- **Design Principles**: https://principles.design/
-
-### AI Integration
-
-#### AI
-- **AI API Documentation**: https://docs.x.ai/
-- **API Console**: https://console.x.ai/
-
-### Tools & Workflow
-
-#### Git & GitHub
-- **Git Documentation**: https://git-scm.com/doc
-- **GitHub Actions**: https://docs.github.com/en/actions
-
-#### Development Tools
-- **VS Code**: https://code.visualstudio.com/docs
-- **Postman (API Testing)**: https://learning.postman.com/
-
-### Tutorial Bahasa Indonesia
-
-#### Python & FastAPI
-- **Python ID**: https://www.python.or.id/
-- **Dicoding - Belajar Python**: https://www.dicoding.com/academies/86
-
-#### Web Development
-- **Petani Kode - HTML & CSS**: https://www.petanikode.com/html-dasar/
-- **Web Programming UNPAS (YouTube)**: https://www.youtube.com/c/WebProgrammingUNPAS
+- **Developer**: Reyza
+- **Project**: COMPARELY - Platform Perbandingan Perangkat
+- **Institusi**: [Institusi Anda]
+- **Tahun**: 2024-2025
 
 ---
 
-**Dibuat oleh Tim COMPARELY** | 2025
+## 📞 Dukungan
 
+Untuk masalah, pertanyaan, atau saran:
+- **GitHub Issues**: [Buat issue](https://github.com/reyzae/comparely/issues)
+- **Email**: [Email Anda]
+- **Dokumentasi**: Cek folder `/docs`
+
+---
+
+## 🙏 Acknowledgments
+
+- **FastAPI** - Modern web framework
+- **SQLAlchemy** - Database ORM
+- **xAI Grok** - Integrasi AI
+- **Font Awesome** - Icons
+- **Google Fonts** - Typography
+
+---
+
+## 📊 Statistik Project
+
+- **Baris Kode**: 15,000+
+- **File**: 100+
+- **Fitur**: 30+
+- **Halaman Dokumentasi**: 10+
+- **Test Coverage**: Berkembang
+
+---
+
+**Dibuat dengan ❤️ menggunakan Python & FastAPI**

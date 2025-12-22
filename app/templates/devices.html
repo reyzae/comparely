@@ -18,7 +18,23 @@
 <!-- Halaman Daftar Semua Device -->
 <section class="devices-section">
     <div class="container">
-        <h1>Browse Devices</h1>
+        <!-- Header with View Toggle -->
+        <div class="devices-header">
+            <h1>Browse Devices</h1>
+
+            <!-- View Toggle Buttons -->
+            <div class="view-toggle">
+                <button class="view-toggle-btn active" data-view="grid" id="gridViewBtn">
+                    <i class="fa-solid fa-grip"></i>
+                    <span>Grid</span>
+                </button>
+                <button class="view-toggle-btn" data-view="list" id="listViewBtn">
+                    <i class="fa-solid fa-list"></i>
+                    <span>List</span>
+                </button>
+            </div>
+        </div>
+
         <p class="section-subtitle">Pilih 2 device untuk membandingkan</p>
 
         <!-- Filter Section -->
@@ -34,21 +50,75 @@
                     </select>
                 </div>
 
-                <!-- Filter by Max Price -->
+                <!-- Filter by Brand -->
                 <div class="filter-item">
-                    <label for="max_price">Harga Maksimal:</label>
-                    <input type="number" name="max_price" id="max_price" class="filter-input"
-                        placeholder="Contoh: 5000000" value="{{ max_price if max_price else '' }}">
+                    <label for="brand">Brand:</label>
+                    <select name="brand" id="brand" class="filter-select">
+                        <option value="">Semua Brand</option>
+                        {% for brand_item in brands %}
+                        <option value="{{ brand_item }}" {% if brand==brand_item %}selected{% endif %}>{{ brand_item }}
+                        </option>
+                        {% endfor %}
+                    </select>
                 </div>
 
-                <!-- Submit Button -->
-                <button type="submit" class="btn btn-primary">Filter</button>
-                <a href="/devices" class="btn btn-secondary">Reset</a>
+                <!-- Filter by RAM -->
+                <div class="filter-item">
+                    <label for="ram">RAM:</label>
+                    <select name="ram" id="ram" class="filter-select">
+                        <option value="">Semua RAM</option>
+                        <option value="4GB" {% if ram=='4GB' %}selected{% endif %}>4GB</option>
+                        <option value="6GB" {% if ram=='6GB' %}selected{% endif %}>6GB</option>
+                        <option value="8GB" {% if ram=='8GB' %}selected{% endif %}>8GB</option>
+                        <option value="12GB" {% if ram=='12GB' %}selected{% endif %}>12GB</option>
+                        <option value="16GB" {% if ram=='16GB' %}selected{% endif %}>16GB+</option>
+                    </select>
+                </div>
+
+                <!-- Filter by Storage -->
+                <div class="filter-item">
+                    <label for="storage">Storage:</label>
+                    <select name="storage" id="storage" class="filter-select">
+                        <option value="">Semua Storage</option>
+                        <option value="64GB" {% if storage=='64GB' %}selected{% endif %}>64GB</option>
+                        <option value="128GB" {% if storage=='128GB' %}selected{% endif %}>128GB</option>
+                        <option value="256GB" {% if storage=='256GB' %}selected{% endif %}>256GB</option>
+                        <option value="512GB" {% if storage=='512GB' %}selected{% endif %}>512GB</option>
+                        <option value="1TB" {% if storage=='1TB' %}selected{% endif %}>1TB+</option>
+                    </select>
+                </div>
+
+                <!-- Filter by Max Price with Range Slider -->
+                <div class="filter-item filter-item-price">
+                    <label for="max_price">Harga Maksimal:</label>
+                    <div class="price-slider-container">
+                        <input type="range" name="max_price" id="priceSlider" class="price-slider" min="0"
+                            max="50000000" step="500000" value="{{ max_price if max_price else '50000000' }}">
+                        <div class="price-display">
+                            <span class="price-value" id="priceValue">
+                                Rp {{ "{:,.0f}".format(max_price|int) if max_price else '50.000.000' }}
+                            </span>
+                        </div>
+                        <div class="price-range-labels">
+                            <span class="price-min">Rp 0</span>
+                            <span class="price-max">Rp 50 Juta</span>
+                        </div>
+                    </div>
+                    <!-- Hidden input untuk form submission -->
+                    <input type="hidden" name="max_price_hidden" id="maxPriceHidden"
+                        value="{{ max_price if max_price else '' }}">
+                </div>
+
+                <!-- Filter Buttons -->
+                <div class="filter-buttons">
+                    <button type="submit" class="btn btn-primary btn-filter">Filter</button>
+                    <a href="/devices" class="btn btn-secondary btn-filter">Reset</a>
+                </div>
             </form>
         </div>
 
-        <!-- Devices Grid -->
-        <div class="devices-grid">
+        <!-- Devices Grid View -->
+        <div class="devices-grid" id="devicesGrid">
             {% if devices %}
             {% for device in devices %}
             <div class="device-item-card">
@@ -67,6 +137,45 @@
                 <p class="device-price">Rp {{ "{:,.0f}".format(device.price) if device.price else 'N/A' }}</p>
 
                 <div class="device-actions">
+                    <a href="/device/{{ device.id }}" class="btn btn-secondary btn-small">Detail</a>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="no-devices">
+                <div class="empty-icon">📱</div>
+                <p>Tidak ada device yang sesuai dengan filter yang Anda pilih.</p>
+                <p style="font-size: 14px; color: var(--color-text-light); margin-top: 8px;">Coba ubah filter atau reset
+                    untuk melihat semua device.</p>
+                <a href="/devices" class="btn btn-primary" style="margin-top: 16px;">Reset Filter</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Devices List View (Hidden by default) -->
+        <div class="devices-list" id="devicesList" style="display: none;">
+            {% if devices %}
+            {% for device in devices %}
+            <div class="device-item-list">
+                <!-- Checkbox untuk select device -->
+                <input type="checkbox" class="device-checkbox" data-id="{{ device.id }}" data-name="{{ device.name }}">
+
+                <!-- Device Info -->
+                <div class="device-list-info">
+                    <h3>{{ device.name }}</h3>
+                    <p class="device-brand">{{ device.brand }}</p>
+                </div>
+
+                <!-- Device Specs -->
+                <div class="device-list-specs">
+                    <span class="spec-badge"><strong>CPU:</strong> {{ device.cpu or 'N/A' }}</span>
+                    <span class="spec-badge"><strong>RAM:</strong> {{ device.ram or 'N/A' }}</span>
+                    <span class="spec-badge"><strong>Storage:</strong> {{ device.storage or 'N/A' }}</span>
+                </div>
+
+                <!-- Device Price & Actions -->
+                <div class="device-list-actions">
+                    <p class="device-price">Rp {{ "{:,.0f}".format(device.price) if device.price else 'N/A' }}</p>
                     <a href="/device/{{ device.id }}" class="btn btn-secondary btn-small">Detail</a>
                 </div>
             </div>
