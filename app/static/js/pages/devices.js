@@ -78,33 +78,89 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==========================================
-    // PRICE SLIDER FUNCTIONALITY
+    // PRICE SLIDER FUNCTIONALITY - ENHANCED
     // ==========================================
 
     const priceSlider = document.getElementById('priceSlider');
     const priceValue = document.getElementById('priceValue');
 
     if (priceSlider && priceValue) {
-        // Format number to Rupiah
+        // Format number to Rupiah with proper formatting
         function formatRupiah(number) {
-            return 'Rp ' + number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            // Convert to millions for cleaner display
+            const millions = number / 1000000;
+
+            if (millions >= 1) {
+                // Format as "Rp XX.X Juta" or "Rp XX Juta"
+                const formatted = millions % 1 === 0
+                    ? millions.toFixed(0)
+                    : millions.toFixed(1);
+                return `Rp ${formatted} Juta`;
+            } else {
+                // Format as "Rp XXX.XXX"
+                return 'Rp ' + number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            }
         }
 
-        // Update price display and gradient
+        // Update price display with smooth gradient animation
         function updatePriceDisplay() {
             const value = parseInt(priceSlider.value);
-            priceValue.textContent = formatRupiah(value);
+            const max = parseInt(priceSlider.max);
+            const percentage = (value / max) * 100;
 
-            // Update gradient fill
-            const percentage = (value / priceSlider.max) * 100;
-            priceSlider.style.background = `linear-gradient(to right, #06B6D4 0%, #06B6D4 ${percentage}%, #E5E7EB ${percentage}%, #E5E7EB 100%)`;
+            // Update text with smooth transition
+            priceValue.style.opacity = '0.7';
+            setTimeout(() => {
+                priceValue.textContent = formatRupiah(value);
+                priceValue.style.opacity = '1';
+            }, 100);
+
+            // Update gradient fill for Webkit browsers (Chrome, Safari, Edge)
+            // This creates a dynamic fill effect
+            const gradientColor = `linear-gradient(to right, 
+                #06B6D4 0%, 
+                #0891B2 ${percentage}%, 
+                #E5E7EB ${percentage}%, 
+                #E5E7EB 100%)`;
+
+            priceSlider.style.background = gradientColor;
+
+            // Add subtle scale animation on price value
+            priceValue.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                priceValue.style.transform = 'scale(1)';
+            }, 150);
         }
 
-        // Event listener for slider input
+        // Event listener for slider input (real-time update)
         priceSlider.addEventListener('input', updatePriceDisplay);
+
+        // Add transition to price value for smooth updates
+        priceValue.style.transition = 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)';
 
         // Initialize on page load
         updatePriceDisplay();
+
+        // Optional: Add touch feedback for mobile
+        let isSliding = false;
+
+        priceSlider.addEventListener('mousedown', () => {
+            isSliding = true;
+            priceSlider.style.cursor = 'grabbing';
+        });
+
+        priceSlider.addEventListener('mouseup', () => {
+            isSliding = false;
+            priceSlider.style.cursor = 'grab';
+        });
+
+        priceSlider.addEventListener('touchstart', () => {
+            isSliding = true;
+        });
+
+        priceSlider.addEventListener('touchend', () => {
+            isSliding = false;
+        });
     }
 
     // ==========================================
