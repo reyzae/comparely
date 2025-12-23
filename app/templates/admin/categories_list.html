@@ -123,7 +123,6 @@
                     </th>
                     <th>ID</th>
                     <th>Name</th>
-                    <th>Description</th>
                     <th>Devices</th>
                     <th>Actions</th>
                 </tr>
@@ -138,7 +137,6 @@
                     </td>
                     <td>{{ stat.category.id }}</td>
                     <td><strong>{{ stat.category.name }}</strong></td>
-                    <td>{{ stat.category.description or '-' }}</td>
                     <td>
                         <div class="device-count-badge">
                             <i class="fas fa-mobile-alt"></i>
@@ -165,7 +163,7 @@
                 {% endfor %}
                 {% else %}
                 <tr>
-                    <td colspan="6" class="text-center" style="padding: 2rem;">
+                    <td colspan="5" class="text-center" style="padding: 2rem;">
                         {% if search %}
                         <i class="fas fa-search" style="font-size: 2rem; opacity: 0.3; margin-bottom: 1rem;"></i>
                         <p>Tidak ada category yang cocok dengan "{{ search }}"</p>
