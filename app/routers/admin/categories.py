@@ -135,12 +135,11 @@ async def admin_category_edit(
 async def admin_category_create(
     request: Request,
     name: str = Form(...),
-    description: str = Form(None),
     db: Session = Depends(get_db)
 ):
     """Create new category"""
     try:
-        category = Category(name=name, description=description)
+        category = Category(name=name)
         db.add(category)
         db.commit()
         return RedirectResponse(
@@ -160,7 +159,6 @@ async def admin_category_update(
     request: Request,
     category_id: int,
     name: str = Form(...),
-    description: str = Form(None),
     db: Session = Depends(get_db)
 ):
     """Update category"""
@@ -173,7 +171,6 @@ async def admin_category_update(
             )
         
         category.name = name
-        category.description = description
         db.commit()
         return RedirectResponse(
             url="/admin/categories?message=Category updated successfully",
